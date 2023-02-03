@@ -20,10 +20,7 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-
-
 class _SignupPageState extends State<SignupPage> {
-
   final _multiSelectKey = GlobalKey<FormFieldState>();
 
   @override
@@ -230,54 +227,54 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.only(left: 5.0),
-                            child:
-                              Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                              Expanded(
-                              flex: 1,
-                              child: RadioListTile(
-                                contentPadding: EdgeInsets.all(0),
-                                dense: true,
-                              value: 0,
-                              groupValue: _groupValue,
-                              title: Text("화주", overflow: TextOverflow.ellipsis),
-                              onChanged: (newValue) =>
-                                setState(() => _groupValue = newValue!),
-                                activeColor: Colors.lightBlue[900],
-                                selected: true,
+                                Expanded(
+                                  flex: 1,
+                                  child: RadioListTile(
+                                    contentPadding: EdgeInsets.all(0),
+                                    dense: true,
+                                    value: 0,
+                                    groupValue: _groupValue,
+                                    title: Text("화주",
+                                        overflow: TextOverflow.ellipsis),
+                                    onChanged: (newValue) =>
+                                        setState(() => _groupValue = newValue!),
+                                    activeColor: Colors.lightBlue[900],
+                                    selected: true,
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                              flex: 1,
-                              child: RadioListTile(
-                                contentPadding: EdgeInsets.all(0),
-                                dense: true,
-                              value: 1,
-                              groupValue: _groupValue,
-                              title: Text("차주"),
-                              onChanged: (newValue) =>
-                                setState(() => _groupValue = newValue!),
-                                activeColor: Colors.lightBlue[900],
-                                selected: false,
+                                Expanded(
+                                  flex: 1,
+                                  child: RadioListTile(
+                                    contentPadding: EdgeInsets.all(0),
+                                    dense: true,
+                                    value: 1,
+                                    groupValue: _groupValue,
+                                    title: Text("차주"),
+                                    onChanged: (newValue) =>
+                                        setState(() => _groupValue = newValue!),
+                                    activeColor: Colors.lightBlue[900],
+                                    selected: false,
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                              flex: 1,
-                              child: RadioListTile(
-                              contentPadding: EdgeInsets.all(0),
-                              dense: true,
-                              value: 2,
-                              groupValue: _groupValue,
-                              title: Text("영업사원"),
-                              onChanged: (newValue) =>
-                                setState(() => _groupValue = newValue!),
-                                activeColor: Colors.lightBlue[900],
-                                selected: false,
+                                Expanded(
+                                  flex: 1,
+                                  child: RadioListTile(
+                                    contentPadding: EdgeInsets.all(0),
+                                    dense: true,
+                                    value: 2,
+                                    groupValue: _groupValue,
+                                    title: Text("영업사원"),
+                                    onChanged: (newValue) =>
+                                        setState(() => _groupValue = newValue!),
+                                    activeColor: Colors.lightBlue[900],
+                                    selected: false,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -559,13 +556,11 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if( _selectedCategory == '차주') {
+                          if (_selectedCategory == '차주') {
                             if (formKey.currentState!.validate()) {
                               checkUserEmail();
                             }
-                          }
-                          else
-                          {
+                          } else {
                             checkUserEmail();
                           }
                         },
@@ -621,5 +616,3 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
-
-

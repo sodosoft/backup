@@ -158,7 +158,7 @@ class _LoginPageState extends State<LoginScreen> {
                         ],
                       ),
                       SizedBox(
-                        width: 90.0,
+                        width: 30.0,
                       ),
                       Image(
                         image: AssetImage('assets/images/truck.gif'),

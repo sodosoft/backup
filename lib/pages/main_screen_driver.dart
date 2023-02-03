@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:bangtong/login/loginScreen.dart';
@@ -29,10 +30,31 @@ class MainScreenDriver extends StatefulWidget {
 }
 
 class _MainScreen extends State<MainScreenDriver> {
+  Timer? _timer;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _start();
+    super.initState();
+  }
+
+  void _start() {
+    _timer = Timer.periodic(Duration(minutes: 60), (timer) {
+      setState(() {
+        offDialog(2);
+      });
+    });
+  }
 
   final List<Widget> _widgetOptions = <Widget>[
     // MainScreen(),
-    Driver_first(),  // 배차 등록 현황
+    Driver_first(), // 배차 등록 현황
     board(), // 게시판
     third_D(), // 배차 내역
     four(), // 상담문의
@@ -63,7 +85,7 @@ class _MainScreen extends State<MainScreenDriver> {
             Navigator.push(
                 context, MaterialPageRoute(builder: ((context) => Setting())));
           },
-          icon:  Icon(Icons.person),
+          icon: Icon(Icons.person),
         ),
         SizedBox(
           width: 1,
@@ -71,7 +93,7 @@ class _MainScreen extends State<MainScreenDriver> {
         IconButton(
           tooltip: "로그아웃",
           onPressed: () {
-            offDialog();
+            offDialog(1);
             // Get.to(() => LoginPage());
           },
           icon: Icon(Icons.power_settings_new),
@@ -82,14 +104,14 @@ class _MainScreen extends State<MainScreenDriver> {
 
   @override
   Widget build(BuildContext context) {
-      return WillPopScope(
-          onWillPop: () {
-        return offDialog();
+    return WillPopScope(
+      onWillPop: () {
+        return offDialog(1);
       },
       child: Scaffold(
-      appBar: _appbarWidget(),
-      body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
-      // bottom navigation 선언
+        appBar: _appbarWidget(),
+        body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
+        // bottom navigation 선언
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -121,7 +143,8 @@ class _MainScreen extends State<MainScreenDriver> {
     );
   }
 
-  Future<bool> offDialog() async {
+  Future<bool> offDialog(flag) async {
+    BuildContext dialogContext;
     return await showDialog(
         context: context,
         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
@@ -134,7 +157,7 @@ class _MainScreen extends State<MainScreenDriver> {
             //Dialog Main Title
             title: Column(
               children: <Widget>[
-                new Text("로그아웃"),
+                new Text(flag == 1 ? "로그아웃" : "시간 초과"),
               ],
             ),
             //
@@ -143,7 +166,9 @@ class _MainScreen extends State<MainScreenDriver> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "로그아웃 하시겠습니까?",
+                  flag == 1
+                      ? "로그아웃 하시겠습니까?"
+                      : "접속하신 지 한시간이 지났습니다.\n 로그아웃 하시겠습니까?",
                 ),
               ],
             ),
@@ -151,22 +176,33 @@ class _MainScreen extends State<MainScreenDriver> {
               new TextButton(
                 child: new Text("취소"),
                 onPressed: () {
-                  Navigator.pop(context);
+                  setState(() {
+                    if (flag == 2) {
+                      _start();
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  });
                 },
               ),
               new TextButton(
                 child: new Text("확인"),
                 onPressed: () {
-                  LoginUpdate.LoginflagChange(LoginScreen.allID, 'N');
-                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
+                  LogOut();
                 },
               ),
             ],
           );
         });
+  }
+
+  void LogOut() {
+    LoginUpdate.LoginflagChange(LoginScreen.allID, 'N');
+    Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
   }
 }

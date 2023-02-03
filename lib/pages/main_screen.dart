@@ -22,9 +22,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreen extends State<MainScreen> {
   Timer? _timer;
 
-  var _time = 0;
-  var _isRunning = false;
-
   @override
   void dispose() {
     _timer?.cancel();
@@ -38,13 +35,14 @@ class _MainScreen extends State<MainScreen> {
   }
 
   void _start() {
-    _timer = Timer.periodic(Duration(minutes: 30), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 60), (timer) {
       setState(() {
-        offDialog();
+        offDialog(2);
       });
     });
   }
 
+  // 바닥 메뉴
   final List<Widget> _widgetOptions = <Widget>[
     // MainScreen(),
     first(), // 배차 등록 현황
@@ -80,7 +78,7 @@ class _MainScreen extends State<MainScreen> {
             Navigator.push(
                 context, MaterialPageRoute(builder: ((context) => Setting())));
           },
-          icon:  Icon(Icons.person),
+          icon: Icon(Icons.person),
         ),
         SizedBox(
           width: 1,
@@ -88,7 +86,7 @@ class _MainScreen extends State<MainScreen> {
         IconButton(
           tooltip: "로그아웃",
           onPressed: () {
-            offDialog();
+            offDialog(1);
             // Get.to(() => LoginPage());
           },
           icon: Icon(Icons.power_settings_new),
@@ -101,12 +99,12 @@ class _MainScreen extends State<MainScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        return offDialog();
+        return offDialog(1);
       },
       child: Scaffold(
         appBar: _appbarWidget(),
         body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
-        // bottom navigation 선언
+        //bottom navigation 선언
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -146,7 +144,7 @@ class _MainScreen extends State<MainScreen> {
     );
   }
 
-  Future<bool> offDialog() async {
+  Future<bool> offDialog(flag) async {
     return await showDialog(
         context: context,
         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
@@ -168,7 +166,9 @@ class _MainScreen extends State<MainScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "로그아웃 하시겠습니까?",
+                  flag == 1
+                      ? "로그아웃 하시겠습니까?"
+                      : "접속하신 지 한시간이 지났습니다.\n 로그아웃 하시겠습니까?",
                 ),
               ],
             ),
@@ -176,22 +176,33 @@ class _MainScreen extends State<MainScreen> {
               new TextButton(
                 child: new Text("취소"),
                 onPressed: () {
-                  Navigator.pop(context);
+                  setState(() {
+                    if (flag == 2) {
+                      _start();
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  });
                 },
               ),
               new TextButton(
                 child: new Text("확인"),
                 onPressed: () {
-                  LoginUpdate.LoginflagChange(LoginScreen.allID, 'N');
-                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
+                  LogOut();
                 },
               ),
             ],
           );
         });
+  }
+
+  void LogOut() {
+    LoginUpdate.LoginflagChange(LoginScreen.allID, 'N');
+    Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
   }
 }

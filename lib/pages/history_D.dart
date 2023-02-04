@@ -40,12 +40,24 @@ class _MyAppState extends State<third_D> {
   String selectedSearch = '';
   String _selectedDate1 = '';
   String _selectedDate2 = '';
+  String monthStart = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, 1)); // 1st
+  String monthEnd = DateFormat('yyyy-MM-dd').format(
+      DateTime(DateTime.now().year, DateTime.now().month + 1, 0)); // last
+  String LastMonthStart = DateFormat('yyyy-MM-dd').format(
+      DateTime(DateTime.now().year, DateTime.now().month - 1, 1)); // 1st
+  String LastMonthEnd = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, -1)); // 1st
 
   Future<List<OrderData_driver>?> _getPost() async {
     try {
       var respone = await http.post(Uri.parse(API.order_D_HISTORY), body: {
         'userCarNo': LoginScreen.allCarNo,
-        'searchFlag': selectedFlag
+        'searchFlag': selectedFlag,
+        'monthStart': monthStart,
+        'monthEnd': monthEnd,
+        'LastMonthStart': LastMonthStart,
+        'LastMonthEnd': LastMonthEnd
       });
 
       if (respone.statusCode == 200) {
@@ -101,13 +113,19 @@ class _MyAppState extends State<third_D> {
       setState(() {
         if (!boardList.isEmpty) {
           boardList.clear();
+          itmCnt = '0';
+          subTotal = '0';
         }
       });
       var respone = await http.post(Uri.parse(API.order_D_HISTORY), body: {
         'userCarNo': LoginScreen.allCarNo,
         'searchFlag': selectedFlag,
         'startDateTime': _selectedDate1,
-        'endDateTime': _selectedDate2
+        'endDateTime': _selectedDate2,
+        'monthStart': monthStart,
+        'monthEnd': monthEnd,
+        'LastMonthStart': LastMonthStart,
+        'LastMonthEnd': LastMonthEnd
       });
 
       if (respone.statusCode == 200) {
@@ -129,10 +147,11 @@ class _MyAppState extends State<third_D> {
                 item['userCarNo']);
             boardList.add(boardData);
           }
+
+          itmCnt = boardList.length.toString();
+          subTotal = CostAdd(boardList);
         }
 
-        itmCnt = boardList.length.toString();
-        subTotal = CostAdd(boardList);
         itemCounterController.text = '   총 $itmCnt 건  합계 $subTotal원';
 
         final data = boardList;
@@ -292,7 +311,7 @@ class _MyAppState extends State<third_D> {
                                           showDatePicker(
                                         context: context,
                                         initialDate: DateTime.now(),
-                                        firstDate: DateTime(2018),
+                                        firstDate: DateTime(2023),
                                         lastDate: DateTime(2030),
                                       );
                                       selectedDate.then((DateTime) {
@@ -310,7 +329,7 @@ class _MyAppState extends State<third_D> {
                                           showDatePicker(
                                         context: context,
                                         initialDate: DateTime.now(),
-                                        firstDate: DateTime(2018),
+                                        firstDate: DateTime(2023),
                                         lastDate: DateTime(2030),
                                       );
                                       selectedDate.then((DateTime) {
@@ -353,11 +372,11 @@ class _MyAppState extends State<third_D> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('1개월'),
+                            child: Text('이번달'),
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('3개월'),
+                            child: Text('지난달'),
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -424,7 +443,9 @@ class _MyAppState extends State<third_D> {
           ),
           Expanded(
             child: boardList.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(
+                    child: Text("조회된 데이터가 없습니다."),
+                  )
                 : RefreshIndicator(
                     onRefresh: refresh,
                     child: FutureBuilder(

@@ -185,7 +185,7 @@ class _MyAppState extends State<DetailPageDriver>
                         if (isConfirm) {
                           Fluttertoast.showToast(
                               msg:
-                                  '배차가 완료되었습니다. \n 해당 배차는 배차 내역에 가셔서 확인 가능합니다.');
+                                  '배차가 완료되었습니다. \n 해당 배차는 화주에 확인 후 \n 배차 내역에 가셔서 확인 가능합니다.');
                           isPlaying = false;
                           isSending = false;
                           _isButtonDisabled = false;

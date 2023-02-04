@@ -33,40 +33,36 @@ class _MyAppState extends State<third> {
         final result = utf8.decode(respone.bodyBytes);
         List<dynamic> json = jsonDecode(result);
 
-        for (var item in json.reversed) {
-          OrderData boardData = OrderData(
-              item['orderID'],
-              item['orderIndex'],
-              item['startArea'],
-              item['endArea'],
-              item['cost'],
-              item['payMethod'],
-              item['carKind'],
-              item['product'],
-              item['grade'],
-              item['startDateTime'],
-              item['endDateTime'],
-              item['end1'],
-              item['bottom'],
-              item['startMethod'],
-              item['steelCode'],
-              item['orderYN'],
-              item['confirmYN'],
-              item['orderTel'],
-              item['companyName'],
-              item['userCarNo']);
-          boardList.add(boardData);
+        if (boardList.isEmpty) {
+          for (var item in json.reversed) {
+            OrderData boardData = OrderData(
+                item['orderID'],
+                item['orderIndex'],
+                item['startArea'],
+                item['endArea'],
+                item['cost'],
+                item['payMethod'],
+                item['carKind'],
+                item['product'],
+                item['grade'],
+                item['startDateTime'],
+                item['endDateTime'],
+                item['end1'],
+                item['bottom'],
+                item['startMethod'],
+                item['steelCode'],
+                item['orderYN'],
+                item['confirmYN'],
+                item['orderTel'],
+                item['companyName'],
+                item['userCarNo']);
+            boardList.add(boardData);
+          }
         }
 
         itmCnt = boardList.length.toString();
         subTotal = CostAdd(boardList);
         itemCounterController.text = '   총 $itmCnt 건  합계 $subTotal원';
-
-        final data = boardList;
-
-        setState(() {
-          this.boardList = data;
-        });
 
         return boardList;
       } else {
@@ -102,7 +98,7 @@ class _MyAppState extends State<third> {
       if (respone.statusCode == 200) {
         final result = utf8.decode(respone.bodyBytes);
         List<dynamic> json = jsonDecode(result);
-        //List<OrderData> boardList = [];
+        List<OrderData> boardList = [];
 
         if (boardList.isEmpty) {
           for (var item in json.reversed) {
@@ -173,14 +169,14 @@ class _MyAppState extends State<third> {
       body: Column(
         children: [
           Container(
-            height: 60,
+            height: 50,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                   style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 20),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
                   onPressed: () {},
                   child: const Text('검색조건1'),
@@ -188,7 +184,7 @@ class _MyAppState extends State<third> {
                 SizedBox(width: 10),
                 TextButton(
                   style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 20),
+                    textStyle: const TextStyle(fontSize: 18),
                   ),
                   onPressed: () {},
                   child: const Text('검색조건2'),
@@ -197,13 +193,15 @@ class _MyAppState extends State<third> {
             ),
           ),
           Expanded(
-            child: RefreshIndicator(
+            child:
+                //  boardList.isEmpty
+                //     ? const Center(child: CircularProgressIndicator()):
+                RefreshIndicator(
               onRefresh: refresh,
               child: FutureBuilder(
                 future: _getPost(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
-                    itmCnt = snapshot.data.length.toString();
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
@@ -249,6 +247,21 @@ class _MyAppState extends State<third> {
               ),
             ),
           ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   height: 48,
+          //   child:Container(
+          //   // 총 건수 & 총 합
+          //   color: Colors.transparent,
+          //   child: Column(
+          //     children: [
+          //       TextField(
+          //           style: TextStyle(color: Colors.black, fontSize: 18),
+          //           controller: itemCounterController),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           SizedBox(
             width: double.infinity,
             height: 48,

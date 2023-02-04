@@ -141,6 +141,7 @@ class _CountdownPageState extends State<CountdownPage>
                   },
                   child: RoundButton(
                     icon: isPlaying == true ? Icons.pause : Icons.play_arrow,
+                    tooltip: Tooltip(message: ''),
                   ),
                 ),
                 GestureDetector(
@@ -152,6 +153,7 @@ class _CountdownPageState extends State<CountdownPage>
                   },
                   child: RoundButton(
                     icon: Icons.stop,
+                    tooltip: Tooltip(message: ''),
                   ),
                 ),
               ],

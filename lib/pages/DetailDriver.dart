@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:bangtong/function/UpdateData.dart';
+import 'package:bangtong/pages/driver_first.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:direct_sms/direct_sms.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../function/custom_alert_dialog.dart';
 import '../function/displaystring.dart';
 import '../login/loginScreen.dart';
 import '../model/orderboard.dart';
@@ -34,6 +33,7 @@ class _MyAppState extends State<DetailPageDriver>
   bool isPlaying = false;
   bool isSending = false;
   bool isConfirm = false;
+  bool _isButtonDisabled = false;
 
   String get countText {
     Duration count = controller.duration! * controller.value;
@@ -47,12 +47,15 @@ class _MyAppState extends State<DetailPageDriver>
   void notify() {
     if (countText == '00:00') {
       offDialog2();
+      _isButtonDisabled = false;
       FlutterRingtonePlayer.playNotification();
     }
   }
 
   @override
   void initState() {
+    _isButtonDisabled = false;
+
     super.initState();
 
     controller =
@@ -153,6 +156,7 @@ class _MyAppState extends State<DetailPageDriver>
                         );
                         // orderYN Y로 업데이트
                         UpdateData.orederYNChange(postData.orderIndex, 'Y');
+                        _isButtonDisabled = true;
                       }
                       controller.reverse(
                           from: controller.value == 0 ? 1.0 : controller.value);
@@ -165,98 +169,117 @@ class _MyAppState extends State<DetailPageDriver>
                     },
                     child: RoundButton(
                       icon: Icons.mail,
+                      tooltip: Tooltip(message: '문자 보내기'),
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
-                      setState(() => isSending = true);
+                      if (_isButtonDisabled) {
+                        setState(() => isSending = true);
 
-                      // 화주한테 전화 걸기
-                      _callNumber(postData.orderTel);
+                        // 화주한테 전화 걸기
+                        _callNumber(postData.orderTel);
 
-                      offDialog3(postData.orderIndex);
+                        offDialog3(postData.orderIndex);
 
-                      if (isConfirm) {
-                        Fluttertoast.showToast(
-                            msg: '배차가 완료되었습니다. \n 해당 배차는 배차 내역에 가셔서 확인 가능합니다.');
-                        isPlaying = false;
-                        isSending = false;
+                        if (isConfirm) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  '배차가 완료되었습니다. \n 해당 배차는 배차 내역에 가셔서 확인 가능합니다.');
+                          isPlaying = false;
+                          isSending = false;
+                          _isButtonDisabled = false;
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            Navigator.pop(context);
+                          });
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: '배차가 취소되었습니다. \n 다른 오더를 이용해주시기 바랍니다.');
+                          isPlaying = false;
+                          isSending = false;
+                          _isButtonDisabled = false;
 
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          Navigator.pop(context);
-                        });
+                          Future.delayed(const Duration(milliseconds: 500),
+                              () async {
+                            final reuslt = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: ((context) => Driver_first())));
+                          });
+                        }
                       } else {
-                        Fluttertoast.showToast(
-                            msg: '배차가 취소되었습니다. \n 다른 오더를 이용해주시기 바랍니다.');
-                        isPlaying = false;
-                        isSending = false;
-
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          Navigator.pop(context);
-                        });
+                        Fluttertoast.showToast(msg: '화주에게 문자 보낸 후 가능합니다.');
                       }
                     },
-                    child: IconButton(
-                      icon: const Icon(Icons.volume_up),
-                      tooltip: 'Increase volume by 10',
-                      onPressed: () {
-                        setState(() {});
-                      },
+                    child: RoundButton(
+                      icon: Icons.phone,
+                      tooltip: Tooltip(message: '전화걸기'),
                     ),
                   ),
-                  CupertinoButton(
-                    minSize: 20,
-                    padding: const EdgeInsets.all(0), // remove button padding
-                    color: CupertinoColors.white.withOpacity(
-                        0), // use this to make default color to transparent
-                    child: Container(
-                      // wrap the text/widget using container
-                      padding: const EdgeInsets.all(10), // add padding
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color.fromARGB(255, 211, 15, 69),
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.all(
-                            Radius.circular(10)), // radius as you wish
-                      ),
-                      child: Wrap(
-                        children: const [
-                          Icon(
-                            CupertinoIcons.videocam_circle_fill,
-                            color: CupertinoColors.systemPink,
-                          ),
-                          Text(
-                            " Upload video",
-                            style: TextStyle(color: CupertinoColors.systemPink),
-                          )
-                        ],
-                      ),
-                    ),
-                    onPressed: () {
-                      // on press action
-                    },
-                  ),
+                  // CupertinoButton(
+                  //   minSize: 20,
+                  //   padding: const EdgeInsets.all(0), // remove button padding
+                  //   color: CupertinoColors.white.withOpacity(
+                  //       0), // use this to make default color to transparent
+                  //   child: Container(
+                  //     // wrap the text/widget using container
+                  //     padding: const EdgeInsets.all(10), // add padding
+                  //     decoration: BoxDecoration(
+                  //       border: Border.all(
+                  //         color: const Color.fromARGB(255, 211, 15, 69),
+                  //         width: 1,
+                  //       ),
+                  //       borderRadius: const BorderRadius.all(
+                  //           Radius.circular(10)), // radius as you wish
+                  //     ),
+                  //     child: Wrap(
+                  //       children: const [
+                  //         Icon(
+                  //           CupertinoIcons.videocam_circle_fill,
+                  //           color: CupertinoColors.systemPink,
+                  //         ),
+                  //         Text(
+                  //           " Upload video",
+                  //           style: TextStyle(color: CupertinoColors.systemPink),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ),
+                  //   onPressed: () {
+                  //     // on press action
+                  //   },
+                  // ),
+
                   GestureDetector(
                     onTap: () {
-                      setState(() => isSending = true);
-                      controller.reset();
+                      if (_isButtonDisabled) {
+                        setState(() => isSending = true);
+                        controller.reset();
 
-                      setState(() {
-                        isPlaying = false;
-                        isSending = false;
-                      });
-                      // orderYN N으로 업데이트
-                      UpdateData.orederYNChange(postData.orderIndex, 'N');
-                      // // 캔슬 횟수 추가(캔슬 횟수 하루에 3번 제한)
-                      offDialog(LoginScreen.cancelCount + 1);
+                        setState(() {
+                          isPlaying = false;
+                          isSending = false;
+                          _isButtonDisabled = false;
+                        });
+                        // orderYN N으로 업데이트
+                        UpdateData.orederYNChange(postData.orderIndex, 'N');
+                        // // 캔슬 횟수 추가(캔슬 횟수 하루에 3번 제한)
+                        offDialog(LoginScreen.cancelCount + 1);
 
-                      Future.delayed(const Duration(milliseconds: 500), () {
-                        Navigator.pop(context);
-                      });
+                        Future.delayed(const Duration(milliseconds: 500),
+                            () async {
+                          final reuslt = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) => Driver_first())));
+                        });
+                      } else {
+                        Fluttertoast.showToast(msg: '화주에게 문자 보낸 후 가능합니다.');
+                      }
                     },
                     child: RoundButton(
                       icon: Icons.close,
+                      tooltip: Tooltip(message: '취소하기'),
                     ),
                   ),
                 ],
@@ -311,67 +334,67 @@ class _MyAppState extends State<DetailPageDriver>
                 ],
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                  child: Text('오더 잡기'),
-                  onPressed: () {
-                    if (LoginScreen.cancelCount > 3) {
-                      Fluttertoast.showToast(
-                          msg: '취소 제한 횟수 3회를 초과하셨습니다.' +
-                              '\n' +
-                              '익일 자정 이후 초기화 됩니다.');
-                      return;
-                    } else {
-                      // 화주한테 차번호 SMS 보내기
-                      _sendSms(
-                        message: '오더 번호: ' +
-                            postData.orderIndex +
-                            '\n\n' +
-                            '차량 번호: ' +
-                            LoginScreen.allCarNo +
-                            '\n' +
-                            '바로 전화 드릴테니 배차 등록 부탁드립니다.',
-                        number: postData.orderTel,
-                      );
-                      // orderYN Y로 업데이트
-                      UpdateData.orederYNChange(postData.orderIndex, 'Y');
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 50,
+            //   child: ElevatedButton(
+            //       child: Text('오더 잡기'),
+            //       onPressed: () {
+            //         if (LoginScreen.cancelCount > 3) {
+            //           Fluttertoast.showToast(
+            //               msg: '취소 제한 횟수 3회를 초과하셨습니다.' +
+            //                   '\n' +
+            //                   '익일 자정 이후 초기화 됩니다.');
+            //           return;
+            //         } else {
+            //           // 화주한테 차번호 SMS 보내기
+            //           _sendSms(
+            //             message: '오더 번호: ' +
+            //                 postData.orderIndex +
+            //                 '\n\n' +
+            //                 '차량 번호: ' +
+            //                 LoginScreen.allCarNo +
+            //                 '\n' +
+            //                 '바로 전화 드릴테니 배차 등록 부탁드립니다.',
+            //             number: postData.orderTel,
+            //           );
+            //           // orderYN Y로 업데이트
+            //           UpdateData.orederYNChange(postData.orderIndex, 'Y');
 
-                      showDialog(
-                        barrierColor: Colors.black26,
-                        barrierDismissible: false, // 바깥 영역 터치시 닫을지 여부
-                        context: context,
-                        builder: (context) {
-                          return CustomAlertDialog(
-                            title: '오더 잡기',
-                            description: '오더 번호: ' +
-                                postData.orderIndex +
-                                '\n' +
-                                '상차지: ' +
-                                postData.startArea.toString() +
-                                '\n' +
-                                '하차지: ' +
-                                postData.endArea.toString() +
-                                '\n' +
-                                '상차일시: ' +
-                                DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
-                                    DateTime.parse(postData.startDateTime)) +
-                                '\n' +
-                                '하차일시: ' +
-                                DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
-                                    DateTime.parse(postData.endDateTime)) +
-                                '\n' +
-                                '운반비: ￦' +
-                                postData.cost,
-                            orderIndex: postData.orderIndex,
-                            orderTel: postData.orderTel,
-                          );
-                        },
-                      );
-                    }
-                  }),
-            ),
+            //           showDialog(
+            //             barrierColor: Colors.black26,
+            //             barrierDismissible: false, // 바깥 영역 터치시 닫을지 여부
+            //             context: context,
+            //             builder: (context) {
+            //               return CustomAlertDialog(
+            //                 title: '오더 잡기',
+            //                 description: '오더 번호: ' +
+            //                     postData.orderIndex +
+            //                     '\n' +
+            //                     '상차지: ' +
+            //                     postData.startArea.toString() +
+            //                     '\n' +
+            //                     '하차지: ' +
+            //                     postData.endArea.toString() +
+            //                     '\n' +
+            //                     '상차일시: ' +
+            //                     DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+            //                         DateTime.parse(postData.startDateTime)) +
+            //                     '\n' +
+            //                     '하차일시: ' +
+            //                     DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+            //                         DateTime.parse(postData.endDateTime)) +
+            //                     '\n' +
+            //                     '운반비: ￦' +
+            //                     postData.cost,
+            //                 orderIndex: postData.orderIndex,
+            //                 orderTel: postData.orderTel,
+            //               );
+            //             },
+            //           );
+            //         }
+            //       }),
+            // ),
           ],
         ),
       ),

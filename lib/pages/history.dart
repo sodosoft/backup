@@ -18,9 +18,10 @@ class third extends StatefulWidget {
 }
 
 class _MyAppState extends State<third> {
-  int _itemCnt = 0;
-  int _subTotal = 0;
+  String subTotal = '';
   String itmCnt = '';
+  var itemCounterController = TextEditingController();
+  List<OrderData> boardList = [];
 
   Future<List<OrderData>?> _getPost() async {
     try {
@@ -31,7 +32,6 @@ class _MyAppState extends State<third> {
       if (respone.statusCode == 200) {
         final result = utf8.decode(respone.bodyBytes);
         List<dynamic> json = jsonDecode(result);
-        List<OrderData> boardList = [];
 
         for (var item in json.reversed) {
           OrderData boardData = OrderData(
@@ -58,6 +58,16 @@ class _MyAppState extends State<third> {
           boardList.add(boardData);
         }
 
+        itmCnt = boardList.length.toString();
+        subTotal = CostAdd(boardList);
+        itemCounterController.text = '   총 $itmCnt 건  합계 $subTotal원';
+
+        final data = boardList;
+
+        setState(() {
+          this.boardList = data;
+        });
+
         return boardList;
       } else {
         Fluttertoast.showToast(msg: '데이터 로딩 실패!');
@@ -73,13 +83,73 @@ class _MyAppState extends State<third> {
   void initState() {
     super.initState();
 
-    _getPost();
+    refresh();
   }
 
   final myController = TextEditingController();
 
   Future refresh() async {
-    _getPost();
+    try {
+      setState(() {
+        if (!boardList.isEmpty) {
+          boardList.clear();
+        }
+      });
+      var respone = await http.post(Uri.parse(API.order_HISTORY), body: {
+        'orderID': LoginScreen.allID,
+      });
+
+      if (respone.statusCode == 200) {
+        final result = utf8.decode(respone.bodyBytes);
+        List<dynamic> json = jsonDecode(result);
+        //List<OrderData> boardList = [];
+
+        if (boardList.isEmpty) {
+          for (var item in json.reversed) {
+            OrderData boardData = OrderData(
+                item['orderID'],
+                item['orderIndex'],
+                item['startArea'],
+                item['endArea'],
+                item['cost'],
+                item['payMethod'],
+                item['carKind'],
+                item['product'],
+                item['grade'],
+                item['startDateTime'],
+                item['endDateTime'],
+                item['end1'],
+                item['bottom'],
+                item['startMethod'],
+                item['steelCode'],
+                item['orderYN'],
+                item['confirmYN'],
+                item['orderTel'],
+                item['companyName'],
+                item['userCarNo']);
+            boardList.add(boardData);
+          }
+        }
+
+        itmCnt = boardList.length.toString();
+        subTotal = CostAdd(boardList);
+        itemCounterController.text = '   총 $itmCnt 건  합계 $subTotal원';
+
+        final data = boardList;
+
+        setState(() {
+          this.boardList = data;
+        });
+
+        return boardList;
+      } else {
+        Fluttertoast.showToast(msg: '데이터 로딩 실패!');
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   @override
@@ -126,16 +196,14 @@ class _MyAppState extends State<third> {
               ],
             ),
           ),
-          Expanded( 
-              child: RefreshIndicator(
+          Expanded(
+            child: RefreshIndicator(
               onRefresh: refresh,
               child: FutureBuilder(
-              future: _getPost(),
-              builder: (context, AsyncSnapshot snapshot) {
+                future: _getPost(),
+                builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
-                    _subTotal = CostAdd(snapshot.data);
                     itmCnt = snapshot.data.length.toString();
-
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
@@ -146,11 +214,19 @@ class _MyAppState extends State<third> {
                                   " >> " +
                                   DisplayString.displayArea(
                                       snapshot.data[index].endArea)),
-                              subtitle: Text('상차일시: ' + DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(DateTime.parse(snapshot.data[index].startDateTime)) +
+                              subtitle: Text('상차일시: ' +
+                                  DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+                                      DateTime.parse(
+                                          snapshot.data[index].startDateTime)) +
                                   '\n' +
-                                  '하차일시: ' + DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(DateTime.parse(snapshot.data[index].endDateTime)) +
+                                  '하차일시: ' +
+                                  DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+                                      DateTime.parse(
+                                          snapshot.data[index].endDateTime)) +
                                   '\n' +
-                                  '운반비: ￦' + snapshot.data[index].cost + "원"),
+                                  '운반비: ￦' +
+                                  snapshot.data[index].cost +
+                                  "원"),
                               isThreeLine: true,
                               onTap: () {
                                 Navigator.push(
@@ -173,10 +249,21 @@ class _MyAppState extends State<third> {
               ),
             ),
           ),
-          Container(
-            // 총 건수 & 총 합
-            color: Colors.green,
-            height: 50,
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: Container(
+              // 총 건수 & 총 합
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  TextField(
+                      enabled: false,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      controller: itemCounterController),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -184,14 +271,21 @@ class _MyAppState extends State<third> {
   }
 }
 
-int CostAdd(data) {
+String CostAdd(data) {
   int _add = 0;
+  String result = '';
+  int trimstr = 0;
 
-  for (int i = 0; i > data.length; i++) {
-    _add += int.parse(data[i].cost);
+  for (int i = 0; i < data.length; i++) {
+    trimstr = int.parse(
+        data[i].cost.replaceAll(RegExp('[^a-zA-Z0-9가-힣\\s]'), "").trim());
+    _add += trimstr;
   }
 
-  return _add;
+  var f = NumberFormat.currency(locale: 'ko_KR', symbol: '₩');
+  result = f.format(_add).toString();
+
+  return result;
 }
 
 class DetailPage extends StatelessWidget {
@@ -210,19 +304,41 @@ class DetailPage extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
-        child:
-            Text('상차지: ' + postData.startArea.toString()  + '\n' +
-                 '하차지: ' + postData.endArea.toString()  + '\n' +
-                 '상차일시: ' + DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(DateTime.parse(postData.startDateTime)) + '\n' +
-                 '하차일시: ' + DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(DateTime.parse(postData.endDateTime)) + '\n' +
-                 '운반비: ￦' + postData.cost + "원"  + '\n' +
-                 '지불방식: ' + postData.payMethod.toString()  + '\n' +
-                 '차종: ' + postData.carKind.toString()  + '\n' +
-                 '품목: ' + postData.product.toString()  + '\n' +
-                 '등급: ' + postData.grade.toString()  + '\n' +
-                 '상차방법: ' + postData.startMethod.toString()  + '\n' +
-                 '차량번호: ' + postData.userCarNo.toString()
-            ),
+        child: Text('상차지: ' +
+            postData.startArea.toString() +
+            '\n' +
+            '하차지: ' +
+            postData.endArea.toString() +
+            '\n' +
+            '상차일시: ' +
+            DateFormat("yyyy년 MM월 dd일 HH시 mm분")
+                .format(DateTime.parse(postData.startDateTime)) +
+            '\n' +
+            '하차일시: ' +
+            DateFormat("yyyy년 MM월 dd일 HH시 mm분")
+                .format(DateTime.parse(postData.endDateTime)) +
+            '\n' +
+            '운반비: ￦' +
+            postData.cost +
+            "원" +
+            '\n' +
+            '지불방식: ' +
+            postData.payMethod.toString() +
+            '\n' +
+            '차종: ' +
+            postData.carKind.toString() +
+            '\n' +
+            '품목: ' +
+            postData.product.toString() +
+            '\n' +
+            '등급: ' +
+            postData.grade.toString() +
+            '\n' +
+            '상차방법: ' +
+            postData.startMethod.toString() +
+            '\n' +
+            '차량번호: ' +
+            postData.userCarNo.toString()),
       ),
       //body: Text(postData.content),
     );

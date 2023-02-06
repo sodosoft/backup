@@ -41,9 +41,8 @@ class _MyAppState extends State<startArea> {
           .StartArea; //"; //http://am1009n.dothome.co.kr/DriverOrder_StartArea.php"
     }
 
-    var response = await http.post(Uri.parse(url), body: {
-      'startArea': startArea,
-    });
+    var response = await http.post(Uri.parse(url),
+        body: {'startArea': startArea, 'selectedFlag': selectedFlag});
 
     var statusCode = response.statusCode;
 
@@ -443,19 +442,6 @@ class _MyAppState extends State<startArea> {
                               ),
                             ),
                           ])),
-                          //Text('상차일시: ' +
-                          //     DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
-                          //         DateTime.parse(
-                          //             boardList[index].startDateTime)) +
-                          //     '\n' +
-                          //     '하차일시: ' +
-                          //     DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
-                          //         DateTime.parse(
-                          //             boardList[index].endDateTime)) +
-                          //     '\n' +
-                          //     '운반비: ￦' +
-                          //     boardList[index].cost +
-                          //     "원"),
                           isThreeLine: true,
                           onTap: () async {
                             Navigator.push(
@@ -507,8 +493,8 @@ class _MyAppState extends State<startArea> {
       _isAll = false;
       _isTodayStart = false;
       _isTomorrowStart = false;
-      _isNextTomorrow = true;
-      _isEtc = false;
+      _isNextTomorrow = false;
+      _isEtc = true;
       selectedFlag = '4';
     }
 

@@ -47,6 +47,7 @@ class _MyAppState extends State<steeltArea> {
       'endArea': endArea,
       'endArea1': endArea2,
       'endArea2': endArea3,
+      'selectedFlag': selectedFlag
     });
 
     var statusCode = response.statusCode;
@@ -334,19 +335,48 @@ class _MyAppState extends State<steeltArea> {
                               " >> " +
                               DisplayString.displayArea(
                                   boardList[index].endArea)),
-                          subtitle: Text('상차일시: ' +
-                              DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+                          subtitle: RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                              text: '상차일시:',
+                              style: TextStyle(
+                                color: Colors.blue,
+                              ),
+                            ),
+                            TextSpan(
+                              text: DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
                                   DateTime.parse(
-                                      boardList[index].startDateTime)) +
-                              '\n' +
-                              '하차일시: ' +
-                              DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
-                                  DateTime.parse(
-                                      boardList[index].endDateTime)) +
-                              '\n' +
-                              '운반비: ￦' +
-                              boardList[index].cost +
-                              "원"),
+                                      boardList[index].startDateTime)),
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '\n하차일시:',
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            ),
+                            TextSpan(
+                              text: DateFormat("yyyy년 MM월 dd일 HH시 mm분").format(
+                                  DateTime.parse(boardList[index].endDateTime)),
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '\n운반비:',
+                              style: TextStyle(
+                                color: Colors.green,
+                              ),
+                            ),
+                            TextSpan(
+                              text: boardList[index].cost,
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ])),
                           isThreeLine: true,
                           onTap: () async {
                             Navigator.push(
@@ -398,8 +428,8 @@ class _MyAppState extends State<steeltArea> {
       _isAll = false;
       _isTodayStart = false;
       _isTomorrowStart = false;
-      _isNextTomorrow = true;
-      _isEtc = false;
+      _isNextTomorrow = false;
+      _isEtc = true;
       selectedFlag = '4';
     }
 

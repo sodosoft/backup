@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangtong/model/orderboard.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../api/api.dart';
 import '../function/displaystring.dart';
@@ -21,12 +22,40 @@ class _MyAppState extends State<third> {
   String subTotal = '';
   String itmCnt = '';
   var itemCounterController = TextEditingController();
+  var selectedDateController1 = TextEditingController();
+  var selectedDateController2 = TextEditingController();
+
   List<OrderData> boardList = [];
+
+  // 토글 버튼
+  bool _isAll = true;
+  bool _isMonth = false;
+  bool _isLast = false;
+  bool _isDirect = false;
+  late List<bool> _isSelected;
+
+  String selectedFlag = '';
+  String selectedSearch = '';
+  String _selectedDate1 = '';
+  String _selectedDate2 = '';
+  String monthStart = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, 1)); // 1st
+  String monthEnd = DateFormat('yyyy-MM-dd').format(
+      DateTime(DateTime.now().year, DateTime.now().month + 1, 0)); // last
+  String LastMonthStart = DateFormat('yyyy-MM-dd').format(
+      DateTime(DateTime.now().year, DateTime.now().month - 1, 1)); // 1st
+  String LastMonthEnd = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, -1)); // 1st
 
   Future<List<OrderData>?> _getPost() async {
     try {
       var respone = await http.post(Uri.parse(API.order_HISTORY), body: {
         'orderID': LoginScreen.allID,
+        'searchFlag': selectedFlag,
+        'monthStart': monthStart,
+        'monthEnd': monthEnd,
+        'LastMonthStart': LastMonthStart,
+        'LastMonthEnd': LastMonthEnd
       });
 
       if (respone.statusCode == 200) {
@@ -78,7 +107,9 @@ class _MyAppState extends State<third> {
   @override
   void initState() {
     super.initState();
-
+    selectedFlag = '0';
+    _range = '';
+    _isSelected = [_isAll, _isMonth, _isLast, _isDirect];
     refresh();
   }
 
@@ -89,10 +120,19 @@ class _MyAppState extends State<third> {
       setState(() {
         if (!boardList.isEmpty) {
           boardList.clear();
+          itmCnt = '0';
+          subTotal = '0';
         }
       });
       var respone = await http.post(Uri.parse(API.order_HISTORY), body: {
         'orderID': LoginScreen.allID,
+        'searchFlag': selectedFlag,
+        'startDateTime': _selectedDate1,
+        'endDateTime': _selectedDate2,
+        'monthStart': monthStart,
+        'monthEnd': monthEnd,
+        'LastMonthStart': LastMonthStart,
+        'LastMonthEnd': LastMonthEnd
       });
 
       if (respone.statusCode == 200) {
@@ -151,43 +191,50 @@ class _MyAppState extends State<third> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   title: const Text('건'),
-      //   foregroundColor: Colors.green,
-      //   backgroundColor: Colors.white,
-      //   shadowColor: Colors.white,
-      //   actions: [
-      //     IconButton(
-      //         tooltip: "검색",
-      //         onPressed: () {
-      //           //검색 조건 창 띄움
-      //         },
-      //         icon: Icon(Icons.search))
-      //   ],
-      // ),
       body: Column(
         children: [
           Container(
-            height: 50,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+            height: 60,
+            child: Column(
               children: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 18),
+                Container(
+                  height: 50,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ToggleButtons(
+                        color: Colors.black.withOpacity(0.60),
+                        selectedColor: Color(0xFF6200EE),
+                        selectedBorderColor: Color(0xFF6200EE),
+                        fillColor: Color(0xFF6200EE).withOpacity(0.08),
+                        splashColor: Color(0xFF6200EE).withOpacity(0.12),
+                        hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(4.0),
+                        constraints: BoxConstraints(minHeight: 36.0),
+                        isSelected: _isSelected,
+                        onPressed: toggleSelect,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('전체'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('이번달'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('지난달'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('직접설정'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  onPressed: () {},
-                  child: const Text('검색조건1'),
-                ),
-                SizedBox(width: 10),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 18),
-                  ),
-                  onPressed: () {},
-                  child: const Text('검색조건2'),
                 ),
               ],
             ),
@@ -248,21 +295,6 @@ class _MyAppState extends State<third> {
                     ),
                   ),
           ),
-          // SizedBox(
-          //   width: double.infinity,
-          //   height: 48,
-          //   child:Container(
-          //   // 총 건수 & 총 합
-          //   color: Colors.transparent,
-          //   child: Column(
-          //     children: [
-          //       TextField(
-          //           style: TextStyle(color: Colors.black, fontSize: 18),
-          //           controller: itemCounterController),
-          //       ],
-          //     ),
-          //   ),
-          // ),
           SizedBox(
             width: double.infinity,
             height: 48,
@@ -282,6 +314,147 @@ class _MyAppState extends State<third> {
         ],
       ),
     );
+  }
+
+  String _range = '';
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      if (args.value is PickerDateRange) {
+        _range = '${DateFormat('yyyy-MM-dd').format(args.value.startDate)} ~'
+            // ignore: lines_longer_than_80_chars
+            ' ${DateFormat('yyyy-MM-dd').format(args.value.endDate ?? args.value.startDate)}';
+        selectedDateController1.text = _range;
+        selectedDateController2.text = _range;
+      } else if (args.value is DateTime) {
+        //_selectedDate = args.value.toString();
+      } else if (args.value is List<DateTime>) {
+        //_dateCount = args.value.length.toString();
+      } else {
+        //_rangeCount = args.value.length.toString();
+      }
+    });
+  }
+
+  void toggleSelect(value) async {
+    if (value == 0) {
+      _isAll = true;
+      _isMonth = false;
+      _isLast = false;
+      _isDirect = false;
+      selectedFlag = '0';
+    } else if (value == 1) {
+      _isAll = false;
+      _isMonth = true;
+      _isLast = false;
+      _isDirect = false;
+      selectedFlag = '1';
+    } else if (value == 2) {
+      _isAll = false;
+      _isMonth = false;
+      _isLast = true;
+      _isDirect = false;
+      selectedFlag = '2';
+    } else {
+      _isAll = false;
+      _isMonth = false;
+      _isLast = false;
+      _isDirect = true;
+      selectedFlag = '3';
+      selectedDateController1.text = '';
+      selectedDateController2.text = '';
+
+      FlutterDialog();
+    }
+
+    setState(() {
+      _isSelected = [_isAll, _isMonth, _isLast, _isDirect];
+
+      refresh();
+    });
+  }
+
+  void FlutterDialog() async {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                new Text("조회 기간", style: TextStyle(color: Colors.green)),
+              ],
+            ),
+            //
+            content: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  height: 330,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white),
+                  padding: EdgeInsets.fromLTRB(20, 280, 20, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      // Text('Selected date: $_selectedDate'),
+                      TextField(
+                          textAlignVertical: TextAlignVertical.bottom,
+                          textAlign: TextAlign.center,
+                          enabled: false,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          controller: selectedDateController2),
+                      //Text('Selected ranges count: $_rangeCount')
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SfDateRangePicker(
+                    onSelectionChanged: _onSelectionChanged,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    // initialSelectedRange: PickerDateRange(
+                    //     DateTime.now().subtract(const Duration(days: 4)),
+                    //     DateTime.now().add(const Duration(days: 3))),
+                  ),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              new TextButton(
+                child: new Text("확인"),
+                onPressed: () {
+                  if (selectedDateController2.text == '') {
+                    _selectedDate1 = '';
+                    _selectedDate2 = '';
+                  } else {
+                    List<String> list = _range.split('~');
+
+                    if (list.length > 1 && list.isNotEmpty) {
+                      _selectedDate1 = list[0].trim();
+                      _selectedDate2 = list[1].trim();
+                    }
+                  }
+                  refresh();
+
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }
 

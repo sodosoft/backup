@@ -25,7 +25,6 @@ class _MyAppState extends State<third_D> {
   String subTotal = '';
   String itmCnt = '';
   var itemCounterController = TextEditingController();
-  var serchController = TextEditingController();
   var selectedDateController1 = TextEditingController();
   var selectedDateController2 = TextEditingController();
 

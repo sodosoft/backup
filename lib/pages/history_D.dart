@@ -172,21 +172,6 @@ class _MyAppState extends State<third_D> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   title: const Text('건'),
-      //   foregroundColor: Colors.green,
-      //   backgroundColor: Colors.white,
-      //   shadowColor: Colors.white,
-      //   actions: [
-      //     IconButton(
-      //         tooltip: "검색",
-      //         onPressed: () {
-      //           //검색 조건 창 띄움
-      //         },
-      //         icon: Icon(Icons.search))
-      //   ],
-      // ),
       body: Column(
         children: [
           Container(
@@ -312,10 +297,7 @@ class _MyAppState extends State<third_D> {
     );
   }
 
-  String _selectedDate = '';
-  String _dateCount = '';
   String _range = '';
-  String _rangeCount = '';
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() {
@@ -326,11 +308,11 @@ class _MyAppState extends State<third_D> {
         selectedDateController1.text = _range;
         selectedDateController2.text = _range;
       } else if (args.value is DateTime) {
-        _selectedDate = args.value.toString();
+        //_selectedDate = args.value.toString();
       } else if (args.value is List<DateTime>) {
-        _dateCount = args.value.length.toString();
+        //_dateCount = args.value.length.toString();
       } else {
-        _rangeCount = args.value.length.toString();
+        //_rangeCount = args.value.length.toString();
       }
     });
   }
@@ -386,7 +368,7 @@ class _MyAppState extends State<third_D> {
             //Dialog Main Title
             title: Column(
               children: <Widget>[
-                new Text("조회 기간", style: TextStyle(color: Colors.red)),
+                new Text("조회 기간", style: TextStyle(color: Colors.green)),
               ],
             ),
             //
@@ -395,11 +377,11 @@ class _MyAppState extends State<third_D> {
               children: <Widget>[
                 Container(
                   width: double.infinity,
-                  height: 300,
+                  height: 330,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.white),
-                  padding: EdgeInsets.fromLTRB(20, 240, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, 280, 20, 0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
@@ -435,6 +417,19 @@ class _MyAppState extends State<third_D> {
               new TextButton(
                 child: new Text("확인"),
                 onPressed: () {
+                  if (selectedDateController2.text == '') {
+                    _selectedDate1 = '';
+                    _selectedDate2 = '';
+                  } else {
+                    List<String> list = _range.split('~');
+
+                    if (list.length > 1 && list.isNotEmpty) {
+                      _selectedDate1 = list[0].trim();
+                      _selectedDate2 = list[1].trim();
+                    }
+                  }
+                  refresh();
+
                   Navigator.pop(context);
                 },
               ),

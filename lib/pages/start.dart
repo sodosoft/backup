@@ -32,7 +32,7 @@ class _MyAppState extends State<startArea> {
   late List<bool> _isSelected;
   String selectedFlag = '';
 
-  _requset() async {
+  _request() async {
     if (startArea == '') {
       url = API
           .DriverOrder_all; //"http://am1009n.dothome.co.kr/DriverOrder_all.php";
@@ -99,7 +99,7 @@ class _MyAppState extends State<startArea> {
         }
       });
 
-      _requset();
+      _request();
     } catch (e) {
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
@@ -109,6 +109,8 @@ class _MyAppState extends State<startArea> {
   @override
   void initState() {
     super.initState();
+    startArea = '';
+    _request();
     _isSelected = [
       _isAll,
       _isTodayStart,
@@ -116,7 +118,6 @@ class _MyAppState extends State<startArea> {
       _isNextTomorrow,
       _isEtc
     ];
-    _requset();
   }
 
   @override

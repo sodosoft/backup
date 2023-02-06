@@ -23,6 +23,14 @@ class _MyAppState extends State<startArea> {
   List<OrderData> boardList = [];
   String startArea = '';
   String url = '';
+  // 토글 버튼
+  bool _isAll = true;
+  bool _isTodayStart = false;
+  bool _isTomorrowStart = false;
+  bool _isNextTomorrow = false;
+  bool _isEtc = false;
+  late List<bool> _isSelected;
+  String selectedFlag = '';
 
   _requset() async {
     if (startArea == '') {
@@ -102,6 +110,13 @@ class _MyAppState extends State<startArea> {
   @override
   void initState() {
     super.initState();
+    _isSelected = [
+      _isAll,
+      _isTodayStart,
+      _isTomorrowStart,
+      _isNextTomorrow,
+      _isEtc
+    ];
     _requset();
   }
 
@@ -323,6 +338,56 @@ class _MyAppState extends State<startArea> {
       ),
       body: Column(
         children: [
+          Container(
+            height: 60,
+            child: Column(
+              children: [
+                Container(
+                  height: 50,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ToggleButtons(
+                        color: Colors.black.withOpacity(0.60),
+                        selectedColor: Color(0xFF6200EE),
+                        selectedBorderColor: Color(0xFF6200EE),
+                        fillColor: Color(0xFF6200EE).withOpacity(0.08),
+                        splashColor: Color(0xFF6200EE).withOpacity(0.12),
+                        hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(4.0),
+                        constraints: BoxConstraints(minHeight: 36.0),
+                        isSelected: _isSelected,
+                        onPressed: toggleSelect,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('전체'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('오늘'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('내일'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('모래'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('기타'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: RefreshIndicator(
                 onRefresh: refresh,
@@ -365,5 +430,56 @@ class _MyAppState extends State<startArea> {
         ],
       ),
     );
+  }
+
+  void toggleSelect(value) async {
+    if (value == 0) {
+      _isAll = true;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '0';
+    } else if (value == 1) {
+      _isAll = false;
+      _isTodayStart = true;
+      _isTomorrowStart = false;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '1';
+    } else if (value == 2) {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = true;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '2';
+    } else if (value == 3) {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = true;
+      _isEtc = false;
+      selectedFlag = '3';
+    } else {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = true;
+      _isEtc = false;
+      selectedFlag = '4';
+    }
+
+    setState(() {
+      _isSelected = [
+        _isAll,
+        _isTodayStart,
+        _isTomorrowStart,
+        _isNextTomorrow,
+        _isEtc
+      ];
+
+      refresh();
+    });
   }
 }

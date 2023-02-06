@@ -20,18 +20,25 @@ class endArea extends StatefulWidget {
 }
 
 class _MyAppState extends State<endArea> {
-
   List<OrderData> boardList = [];
   String endArea = '';
   String url = '';
+  // 토글 버튼
+  bool _isAll = true;
+  bool _isTodayStart = false;
+  bool _isTomorrowStart = false;
+  bool _isNextTomorrow = false;
+  bool _isEtc = false;
+  late List<bool> _isSelected;
+  String selectedFlag = '';
 
   _requset() async {
-
-    if(endArea == '') {
-      url = API.DriverOrder_all; //"http://am1009n.dothome.co.kr/DriverOrder_all.php";
-    }
-    else {
-      url = API.EndArea; //"; //http://am1009n.dothome.co.kr/DriverOrder_EndArea.php"
+    if (endArea == '') {
+      url = API
+          .DriverOrder_all; //"http://am1009n.dothome.co.kr/DriverOrder_all.php";
+    } else {
+      url = API
+          .EndArea; //"; //http://am1009n.dothome.co.kr/DriverOrder_EndArea.php"
     }
 
     var response = await http.post(Uri.parse(url), body: {
@@ -45,7 +52,7 @@ class _MyAppState extends State<endArea> {
       String responseBody = utf8.decode(response.bodyBytes);
       List<dynamic> json = jsonDecode(responseBody);
 
-      if(json.length > 0) {
+      if (json.length > 0) {
         for (var item in json.reversed) {
           OrderData boardData = OrderData(
               item['orderID'],
@@ -70,9 +77,7 @@ class _MyAppState extends State<endArea> {
               item['userCarNo']);
           boardList.add(boardData);
         }
-      }
-      else
-      {
+      } else {
         Fluttertoast.showToast(msg: '조회된 데이터가 없습니다.');
         return null;
       }
@@ -90,7 +95,6 @@ class _MyAppState extends State<endArea> {
 
   Future refresh() async {
     try {
-
       setState(() {
         if (!boardList.isEmpty) {
           boardList.clear();
@@ -98,10 +102,7 @@ class _MyAppState extends State<endArea> {
       });
 
       _requset();
-
-    }
-    catch (e)
-    {
+    } catch (e) {
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -110,6 +111,13 @@ class _MyAppState extends State<endArea> {
   @override
   void initState() {
     super.initState();
+    _isSelected = [
+      _isAll,
+      _isTodayStart,
+      _isTomorrowStart,
+      _isNextTomorrow,
+      _isEtc
+    ];
     _requset();
   }
 
@@ -125,9 +133,10 @@ class _MyAppState extends State<endArea> {
         centerTitle: true,
         elevation: 0.0,
         actions: <Widget>[
-          IconButton(onPressed: (){
-            Navigator.pop(context);
-          },
+          IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: Icon(Icons.close))
         ],
       ),
@@ -148,7 +157,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('전체'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '전체 지역');
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 500), () {
@@ -159,7 +168,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('서울'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '서울 지역');
                   Navigator.pop(context);
                   endArea = '서울';
@@ -171,7 +180,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('인천'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '인천 지역');
                   Navigator.pop(context);
                   endArea = '인천';
@@ -183,7 +192,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('경기'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '경기 지역');
                   Navigator.pop(context);
                   endArea = '경기';
@@ -195,7 +204,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('강원'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '강원 지역');
                   Navigator.pop(context);
                   endArea = '강원';
@@ -207,7 +216,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('대전'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '대전 지역');
                   endArea = '대전';
                   Future.delayed(const Duration(milliseconds: 500), () {
@@ -218,7 +227,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('충남'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '충남 지역');
                   Navigator.pop(context);
                   endArea = '충남';
@@ -230,7 +239,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('충북'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '충북 지역');
                   Navigator.pop(context);
                   endArea = '충북';
@@ -242,7 +251,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('광주'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '광주 지역');
                   Navigator.pop(context);
                   endArea = '광주';
@@ -254,7 +263,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('전남'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '전남 지역');
                   Navigator.pop(context);
                   endArea = '전남';
@@ -266,7 +275,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('전북'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '전북 지역');
                   Navigator.pop(context);
                   endArea = '전북';
@@ -278,7 +287,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('부산'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '부산 지역');
                   Navigator.pop(context);
                   endArea = '부산';
@@ -290,7 +299,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('경남'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '경남 지역');
                   Navigator.pop(context);
                   endArea = '경남';
@@ -302,7 +311,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('대구'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '대구 지역');
                   Navigator.pop(context);
                   endArea = '대구';
@@ -314,7 +323,7 @@ class _MyAppState extends State<endArea> {
               ListTile(
                 dense: true,
                 title: Text('경북'),
-                onTap: (){
+                onTap: () {
                   Fluttertoast.showToast(msg: '경북 지역');
                   Navigator.pop(context);
                   endArea = '경북';
@@ -329,6 +338,56 @@ class _MyAppState extends State<endArea> {
       ),
       body: Column(
         children: [
+          Container(
+            height: 60,
+            child: Column(
+              children: [
+                Container(
+                  height: 50,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ToggleButtons(
+                        color: Colors.black.withOpacity(0.60),
+                        selectedColor: Color(0xFF6200EE),
+                        selectedBorderColor: Color(0xFF6200EE),
+                        fillColor: Color(0xFF6200EE).withOpacity(0.08),
+                        splashColor: Color(0xFF6200EE).withOpacity(0.12),
+                        hoverColor: Color(0xFF6200EE).withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(4.0),
+                        constraints: BoxConstraints(minHeight: 36.0),
+                        isSelected: _isSelected,
+                        onPressed: toggleSelect,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('전체'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('오늘'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('내일'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('모래'),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('기타'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: RefreshIndicator(
                 onRefresh: refresh,
@@ -338,7 +397,7 @@ class _MyAppState extends State<endArea> {
                       return Card(
                         child: ListTile(
                           title: Text(DisplayString.displayArea(
-                              boardList[index].startArea) +
+                                  boardList[index].startArea) +
                               " >> " +
                               DisplayString.displayArea(
                                   boardList[index].endArea)),
@@ -366,12 +425,61 @@ class _MyAppState extends State<endArea> {
                           },
                         ),
                       );
-                    })
-            ),
+                    })),
           ),
         ],
       ),
     );
   }
-}
 
+  void toggleSelect(value) async {
+    if (value == 0) {
+      _isAll = true;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '0';
+    } else if (value == 1) {
+      _isAll = false;
+      _isTodayStart = true;
+      _isTomorrowStart = false;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '1';
+    } else if (value == 2) {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = true;
+      _isNextTomorrow = false;
+      _isEtc = false;
+      selectedFlag = '2';
+    } else if (value == 3) {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = true;
+      _isEtc = false;
+      selectedFlag = '3';
+    } else {
+      _isAll = false;
+      _isTodayStart = false;
+      _isTomorrowStart = false;
+      _isNextTomorrow = true;
+      _isEtc = false;
+      selectedFlag = '4';
+    }
+
+    setState(() {
+      _isSelected = [
+        _isAll,
+        _isTodayStart,
+        _isTomorrowStart,
+        _isNextTomorrow,
+        _isEtc
+      ];
+
+      refresh();
+    });
+  }
+}

@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangtong/model/orderboard.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../api/api.dart';
 import '../function/displaystring.dart';
@@ -31,11 +32,12 @@ class _MyAppState extends State<third_D> {
   List<OrderData_driver> boardList = [];
 
   // 토글 버튼
-  bool _isAll = false;
-  bool _is1Month = false;
-  bool _is3Month = false;
+  bool _isAll = true;
+  bool _isMonth = false;
+  bool _isLast = false;
   bool _isDirect = false;
-  final _isSelected = <bool>[false, false, false, false];
+  late List<bool> _isSelected;
+
   String selectedFlag = '';
   String selectedSearch = '';
   String _selectedDate1 = '';
@@ -99,14 +101,10 @@ class _MyAppState extends State<third_D> {
   void initState() {
     super.initState();
     selectedFlag = '0';
-    selectedSearch = '전체';
-
-    _selectedDate1 = '시작일';
-    _selectedDate2 = '마지막일';
+    _range = '';
+    _isSelected = [_isAll, _isMonth, _isLast, _isDirect];
     refresh();
   }
-
-  final myController = TextEditingController();
 
   Future refresh() async {
     try {
@@ -191,72 +189,6 @@ class _MyAppState extends State<third_D> {
       // ),
       body: Column(
         children: [
-          // Container(
-          //   height: 40,
-          //   child: Row(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     mainAxisAlignment: MainAxisAlignment.start,
-          //     children: [
-          //       IconButton(
-          //         onPressed: () async {
-          //           showAdaptiveActionSheet(
-          //             context: context,
-          //             title: const Text('조회기간'),
-          //             androidBorderRadius: 30,
-          //             actions: <BottomSheetAction>[
-          //               BottomSheetAction(
-          //                   title: const Text('1개월'),
-          //                   onPressed: (context) {
-          //                     //1개월
-          //                     serchController.text = "1개월";
-          //                     selectedFlag = "1";
-          //                     refresh();
-          //                   }),
-          //               BottomSheetAction(
-          //                   title: const Text('3개월'),
-          //                   onPressed: (context) {
-          //                     //3개월
-          //                     serchController.text = "3개월";
-          //                     selectedFlag = "2";
-          //                     refresh();
-          //                   }),
-          //               BottomSheetAction(
-          //                   title: const Text('직접입력'),
-          //                   onPressed: (context) {
-          //                     //직접입력
-          //                     serchController.text = "직접입력";
-          //                     selectedFlag = "3";
-          //                     //조회기간 띄우는 다이알로그
-          //                     //refresh();
-          //                   }),
-          //               BottomSheetAction(
-          //                   title: const Text('전체'),
-          //                   onPressed: (context) {
-          //                     //직접입력
-          //                     serchController.text = "전체";
-          //                     selectedFlag = "0";
-          //                     refresh();
-          //                   }),
-          //             ],
-          //             cancelAction: CancelAction(
-          //                 title: const Text(
-          //                     '취소')), // onPressed parameter is optional by default will dismiss the ActionSheet
-          //           );
-          //         },
-          //         icon: Icon(Icons.search),
-          //         tooltip: '검색',
-          //       ),
-          //       SizedBox(
-          //         width: 15,
-          //       ),
-          //       TextField(
-          //           enabled: false,
-          //           style: TextStyle(color: Colors.black, fontSize: 18),
-          //           controller: serchController),
-          //     ],
-          //   ),
-          // ),
-
           Container(
             height: 60,
             child: Column(
@@ -277,94 +209,7 @@ class _MyAppState extends State<third_D> {
                         borderRadius: BorderRadius.circular(4.0),
                         constraints: BoxConstraints(minHeight: 36.0),
                         isSelected: _isSelected,
-                        onPressed: (index) {
-                          // Respond to button selection
-                          setState(() {
-                            _isSelected[index] = !_isSelected[index];
-
-                            if (_isSelected[0]) {
-                              selectedFlag = '0';
-                              _isSelected[0] = false;
-                              refresh();
-                            } else if (_isSelected[1]) {
-                              selectedFlag = '1';
-                              _isSelected[1] = false;
-
-                              refresh();
-                            } else if (_isSelected[2]) {
-                              selectedFlag = '2';
-                              _isSelected[2] = false;
-                              //_isSelected[3] = false;
-                              refresh();
-                            } else if (_isSelected[3]) {
-                              selectedFlag = '3';
-                              _isSelected[3] = false;
-                              showAdaptiveActionSheet(
-                                context: context,
-                                title: const Text('조회기간'),
-                                androidBorderRadius: 30,
-                                actions: <BottomSheetAction>[
-                                  BottomSheetAction(
-                                    title: Text('$_selectedDate1'),
-                                    onPressed: (context) {
-                                      Future<DateTime?> selectedDate =
-                                          showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2023),
-                                        lastDate: DateTime(2030),
-                                      );
-                                      selectedDate.then((DateTime) {
-                                        setState(() {
-                                          _selectedDate1 =
-                                              '${DateTime?.year}-${DateTime?.month}-${DateTime?.day}';
-                                        });
-                                      });
-                                    },
-                                  ),
-                                  BottomSheetAction(
-                                    title: Text('$_selectedDate2'),
-                                    onPressed: (context) {
-                                      Future<DateTime?> selectedDate =
-                                          showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2023),
-                                        lastDate: DateTime(2030),
-                                      );
-                                      selectedDate.then((DateTime) {
-                                        setState(() {
-                                          if (_selectedDate1 == '시작일' ||
-                                              _selectedDate1.contains("null")) {
-                                            Fluttertoast.showToast(
-                                                msg: '시작일을 입력해주세요!');
-                                            return;
-                                          } else {
-                                            _selectedDate2 =
-                                                '${DateTime?.year}-${DateTime?.month}-${DateTime?.day}';
-                                            if (_selectedDate2 == '마지막일' ||
-                                                _selectedDate2
-                                                    .contains("null")) {
-                                              Fluttertoast.showToast(
-                                                  msg: '마지막일을 입력해주세요!');
-                                              return;
-                                            } else {
-                                              refresh();
-                                              Navigator.pop(context);
-                                            }
-                                          }
-                                        });
-                                      });
-                                    },
-                                  ),
-                                ],
-                                cancelAction: CancelAction(
-                                    title: const Text(
-                                        '취소')), // onPressed parameter is optional by default will dismiss the ActionSheet
-                              );
-                            }
-                          });
-                        },
+                        onPressed: toggleSelect,
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -387,59 +232,8 @@ class _MyAppState extends State<third_D> {
                     ],
                   ),
                 ),
-                // SizedBox(
-                //   height: 5,
-                // ),
-                // Row(
-                //   crossAxisAlignment: CrossAxisAlignment.center,
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     TextButton(
-                //       style: TextButton.styleFrom(
-                //         textStyle: const TextStyle(fontSize: 16),
-                //       ),
-                //       onPressed: () {},
-                //       child: const Text('검색조건1'),
-                //     ),
-                //     TextButton(
-                //       style: TextButton.styleFrom(
-                //         textStyle: const TextStyle(fontSize: 16),
-                //       ),
-                //       onPressed: () {},
-                //       child: const Text(' ~ '),
-                //     ),
-                //     TextButton(
-                //       style: TextButton.styleFrom(
-                //         textStyle: const TextStyle(fontSize: 16),
-                //       ),
-                //       onPressed: () {},
-                //       child: const Text('검색조건2'),
-                //     ),
-                //   ],
-                // ),
               ],
             ),
-            // child: Row(
-            //   crossAxisAlignment: CrossAxisAlignment.center,
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     TextButton(
-            //       style: TextButton.styleFrom(
-            //         textStyle: const TextStyle(fontSize: 18),
-            //       ),
-            //       onPressed: () {},
-            //       child: const Text('검색조건1'),
-            //     ),
-            //     SizedBox(width: 10),
-            //     TextButton(
-            //       style: TextButton.styleFrom(
-            //         textStyle: const TextStyle(fontSize: 18),
-            //       ),
-            //       onPressed: () {},
-            //       child: const Text('검색조건2'),
-            //     ),
-            //   ],
-            // ),
           ),
           Expanded(
             child: boardList.isEmpty
@@ -516,6 +310,137 @@ class _MyAppState extends State<third_D> {
         ],
       ),
     );
+  }
+
+  String _selectedDate = '';
+  String _dateCount = '';
+  String _range = '';
+  String _rangeCount = '';
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      if (args.value is PickerDateRange) {
+        _range = '${DateFormat('yyyy-MM-dd').format(args.value.startDate)} ~'
+            // ignore: lines_longer_than_80_chars
+            ' ${DateFormat('yyyy-MM-dd').format(args.value.endDate ?? args.value.startDate)}';
+        selectedDateController1.text = _range;
+        selectedDateController2.text = _range;
+      } else if (args.value is DateTime) {
+        _selectedDate = args.value.toString();
+      } else if (args.value is List<DateTime>) {
+        _dateCount = args.value.length.toString();
+      } else {
+        _rangeCount = args.value.length.toString();
+      }
+    });
+  }
+
+  void toggleSelect(value) async {
+    if (value == 0) {
+      _isAll = true;
+      _isMonth = false;
+      _isLast = false;
+      _isDirect = false;
+      selectedFlag = '0';
+    } else if (value == 1) {
+      _isAll = false;
+      _isMonth = true;
+      _isLast = false;
+      _isDirect = false;
+      selectedFlag = '1';
+    } else if (value == 2) {
+      _isAll = false;
+      _isMonth = false;
+      _isLast = true;
+      _isDirect = false;
+      selectedFlag = '2';
+    } else {
+      _isAll = false;
+      _isMonth = false;
+      _isLast = false;
+      _isDirect = true;
+      selectedFlag = '3';
+      selectedDateController1.text = '';
+      selectedDateController2.text = '';
+
+      FlutterDialog();
+    }
+
+    setState(() {
+      _isSelected = [_isAll, _isMonth, _isLast, _isDirect];
+
+      refresh();
+    });
+  }
+
+  void FlutterDialog() async {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                new Text("조회 기간", style: TextStyle(color: Colors.red)),
+              ],
+            ),
+            //
+            content: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  height: 300,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white),
+                  padding: EdgeInsets.fromLTRB(20, 240, 20, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      // Text('Selected date: $_selectedDate'),
+                      TextField(
+                          textAlignVertical: TextAlignVertical.bottom,
+                          textAlign: TextAlign.center,
+                          enabled: false,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          controller: selectedDateController2),
+                      //Text('Selected ranges count: $_rangeCount')
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SfDateRangePicker(
+                    onSelectionChanged: _onSelectionChanged,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    // initialSelectedRange: PickerDateRange(
+                    //     DateTime.now().subtract(const Duration(days: 4)),
+                    //     DateTime.now().add(const Duration(days: 3))),
+                  ),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              new TextButton(
+                child: new Text("확인"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }
 

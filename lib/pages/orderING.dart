@@ -181,7 +181,9 @@ class _MyAppState extends State<orderING> {
               UpdateData.confirmYNChange(
                   ordIndex, userCarNoController.text, 'Y');
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => third()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => third())); //배차 내역으로 화면 이동
               refresh();
             } else {
               Fluttertoast.showToast(msg: '차량 번호를 입력해주세요');

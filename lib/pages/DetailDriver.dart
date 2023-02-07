@@ -146,7 +146,7 @@ class _MyAppState extends State<DetailPageDriver>
                         // 화주한테 차번호 SMS 보내기
                         _sendSms(
                           message: '오더 번호: ' +
-                              postData.orderIndex +
+                              postData.orderIndex.toString() +
                               '\n\n' +
                               '차량 번호: ' +
                               LoginScreen.allCarNo +

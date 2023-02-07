@@ -9,8 +9,9 @@ class API {
   static const loginUpdate = "$hostconnect/Login_Update.php";
 
   // order
-  static const addOrder = "$hostconnect/Order.php";
+  static const addOrder = "$hostconnect/Order_Insert.php";
   static const updateOrder = "$hostconnect/Order_Update.php";
+  static const deleteOrder = "$hostconnect/Order_Delete.php";
 
   static const register = "$hostconnect/Register.php";
   static const validateID = "$hostconnect/user/validation.php";

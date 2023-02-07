@@ -1,4 +1,4 @@
-class OrderData{
+class OrderData {
   String orderID;
   String orderIndex;
   String startArea;
@@ -20,12 +20,27 @@ class OrderData{
   String companyName;
   String? userCarNo;
 
-
-  OrderData(this.orderID, this.orderIndex ,this.startArea, this.endArea,
-      this.cost, this.payMethod, this.carKind, this.product,
-      this.grade, this.startDateTime, this.endDateTime, this.end1,
-      this.bottom, this.startMethod, this.steelCode, this.orderYN,
-      this.confirmYN, this.orderTel, this.companyName, this.userCarNo);
+  OrderData(
+      this.orderID,
+      this.orderIndex,
+      this.startArea,
+      this.endArea,
+      this.cost,
+      this.payMethod,
+      this.carKind,
+      this.product,
+      this.grade,
+      this.startDateTime,
+      this.endDateTime,
+      this.end1,
+      this.bottom,
+      this.startMethod,
+      this.steelCode,
+      this.orderYN,
+      this.confirmYN,
+      this.orderTel,
+      this.companyName,
+      this.userCarNo);
 
   factory OrderData.fromJson(Map<String, dynamic> json) => OrderData(
       json['orderID'],
@@ -47,34 +62,33 @@ class OrderData{
       json['confirmYN'],
       json['orderTel'],
       json['companyName'],
-      json['userCarNo']
-  );
+      json['userCarNo']);
 
   Map<String, dynamic> toJson() => {
-    'orderID' : orderID,
-    'orderIndex' : orderIndex,
-    'startArea' : startArea,
-    'endArea' : endArea,
-    'cost' : cost,
-    'payMethod': payMethod,
-    'carKind': carKind,
-    'product': product,
-    'grade': grade,
-    'startDateTime' : startDateTime,
-    'endDateTime' : endDateTime,
-    'end1' : end1,
-    'bottom' : bottom,
-    'startMethod' : startMethod,
-    'steelCode' : steelCode,
-    'orderYN' : orderYN,
-    'confirmYN' : confirmYN,
-    'orderTel' : orderTel,
-    'companyName' : companyName,
-    'userCarNo' : userCarNo
-  };
+        'orderID': orderID,
+        'orderIndex': orderIndex,
+        'startArea': startArea,
+        'endArea': endArea,
+        'cost': cost,
+        'payMethod': payMethod,
+        'carKind': carKind,
+        'product': product,
+        'grade': grade,
+        'startDateTime': startDateTime,
+        'endDateTime': endDateTime,
+        'end1': end1,
+        'bottom': bottom,
+        'startMethod': startMethod,
+        'steelCode': steelCode,
+        'orderYN': orderYN,
+        'confirmYN': confirmYN,
+        'orderTel': orderTel,
+        'companyName': companyName,
+        'userCarNo': userCarNo
+      };
 }
 
-class OrderData_driver{
+class OrderData_driver {
   String orderID;
   String startArea;
   String endArea;
@@ -85,31 +99,38 @@ class OrderData_driver{
   String orderTel;
   String userCarNo;
 
-  OrderData_driver(this.orderID, this.startArea, this.endArea,
-      this.cost, this.startDateTime, this.endDateTime,
-      this.steelCode, this.orderTel, this.userCarNo);
+  OrderData_driver(
+      this.orderID,
+      this.startArea,
+      this.endArea,
+      this.cost,
+      this.startDateTime,
+      this.endDateTime,
+      this.steelCode,
+      this.orderTel,
+      this.userCarNo);
 
-  factory OrderData_driver.fromJson(Map<String, dynamic> json) => OrderData_driver(
-      json['orderID'],
-      json['startArea'],
-      json['endArea'],
-      json['cost'],
-      json['startDateTime'],
-      json['endDateTime'],
-      json['steelCode'],
-      json['orderTel'],
-      json['userCarNo']
-  );
+  factory OrderData_driver.fromJson(Map<String, dynamic> json) =>
+      OrderData_driver(
+          json['orderID'],
+          json['startArea'],
+          json['endArea'],
+          json['cost'],
+          json['startDateTime'],
+          json['endDateTime'],
+          json['steelCode'],
+          json['orderTel'],
+          json['userCarNo']);
 
   Map<String, dynamic> toJson() => {
-    'orderID' : orderID,
-    'startArea' : startArea,
-    'endArea' : endArea,
-    'cost' : cost,
-    'startDateTime' : startDateTime,
-    'endDateTime' : endDateTime,
-    'steelCode' : steelCode,
-    'orderTel' : orderTel,
-    'userCarNo' : userCarNo
-  };
+        'orderID': orderID,
+        'startArea': startArea,
+        'endArea': endArea,
+        'cost': cost,
+        'startDateTime': startDateTime,
+        'endDateTime': endDateTime,
+        'steelCode': steelCode,
+        'orderTel': orderTel,
+        'userCarNo': userCarNo
+      };
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bangtong/pages/addOrder.dart';
+import 'package:bangtong/pages/history.dart';
 import 'package:bangtong/pages/setting.dart';
 import 'package:bangtong/pages/weightDataScreen.dart';
 import 'package:flutter/material.dart';
@@ -143,8 +144,9 @@ class _MyAppState extends State<orderING> {
                             showDialog(
                                 context: context,
                                 builder: (ctxDialog) => SingleChildScrollView(
-                                    child: simpleDialog(
-                                        boardList[index].orderIndex)));
+                                    child: simpleDialog(boardList[index]
+                                        .orderIndex
+                                        .toString())));
                           },
                         ),
                       );
@@ -178,7 +180,8 @@ class _MyAppState extends State<orderING> {
             if (userCarNoController.text != '') {
               UpdateData.confirmYNChange(
                   ordIndex, userCarNoController.text, 'Y');
-              Navigator.pop(context);
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => third()));
               refresh();
             } else {
               Fluttertoast.showToast(msg: '차량 번호를 입력해주세요');

@@ -25,21 +25,20 @@ class orderING extends StatefulWidget {
 }
 
 class _MyAppState extends State<orderING> {
-
   var userCarNoController = TextEditingController();
   List<OrderData> boardList = [];
 
   _getPost() async {
     try {
-        var respone = await http.post(Uri.parse(API.orderBoard_orderYN), body: {
-          'orderID': LoginScreen.allID,
-        });
+      var respone = await http.post(Uri.parse(API.orderBoard_orderYN), body: {
+        'orderID': LoginScreen.allID,
+      });
 
       if (respone.statusCode == 200) {
         final result = utf8.decode(respone.bodyBytes);
         List<dynamic> json = jsonDecode(result);
 
-        if(json.length > 0) {
+        if (json.length > 0) {
           for (var item in json.reversed) {
             OrderData boardData = OrderData(
                 item['orderID'],
@@ -64,9 +63,7 @@ class _MyAppState extends State<orderING> {
                 item['userCarNo']);
             boardList.add(boardData);
           }
-        }
-        else
-        {
+        } else {
           Fluttertoast.showToast(msg: '조회된 데이터가 없습니다.');
           return null;
         }
@@ -95,7 +92,6 @@ class _MyAppState extends State<orderING> {
       });
 
       _getPost();
-
     } catch (e) {
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
@@ -125,7 +121,7 @@ class _MyAppState extends State<orderING> {
                       return Card(
                         child: ListTile(
                           title: Text(DisplayString.displayArea(
-                              boardList[index].startArea) +
+                                  boardList[index].startArea) +
                               " >> " +
                               DisplayString.displayArea(
                                   boardList[index].endArea)),
@@ -146,13 +142,13 @@ class _MyAppState extends State<orderING> {
                           onTap: () {
                             showDialog(
                                 context: context,
-                                builder: (ctxDialog) =>
-                                    SingleChildScrollView(child: simpleDialog(boardList[index].orderIndex)));
+                                builder: (ctxDialog) => SingleChildScrollView(
+                                    child: simpleDialog(
+                                        boardList[index].orderIndex)));
                           },
                         ),
                       );
-                    })
-            ),
+                    })),
           ),
         ],
       ),
@@ -167,8 +163,8 @@ class _MyAppState extends State<orderING> {
   Widget simpleDialog(String ordIndex) {
     return AlertDialog(
       title: Text('배차 완료'),
-      content: Center
-        (child: TextFormField(
+      content: Center(
+        child: TextFormField(
           controller: userCarNoController,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
@@ -179,12 +175,22 @@ class _MyAppState extends State<orderING> {
         new TextButton(
           child: new Text("확인"),
           onPressed: () {
-            UpdateData.confirmYNChange(ordIndex, userCarNoController.text, 'Y');
-            Navigator.pop(context);
-            refresh();
+            if (userCarNoController.text != '') {
+              UpdateData.confirmYNChange(
+                  ordIndex, userCarNoController.text, 'Y');
+              Navigator.pop(context);
+              refresh();
+            } else {
+              Fluttertoast.showToast(msg: '차량 번호를 입력해주세요');
+            }
           },
         ),
-
+        new TextButton(
+          child: new Text("취소"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ],
     );
   }

@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:bangtong/login/login.dart';
 import 'package:bangtong/model/articles.dart';
+import 'package:bangtong/model/orderboard.dart';
+import 'package:bangtong/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,6 +21,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+
+import '../api/api.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({Key? key}) : super(key: key);
@@ -99,7 +105,10 @@ class _AddAppState extends State<AddScreen> {
   @override
   void dispose() {
     _startTextEditingController.dispose();
+    _startDetailTextEditingController.dispose();
     _endTextEditingController.dispose();
+    _endDetailTextEditingController.dispose();
+
     _gradeTextEditingController.dispose();
     _titleTextEditingController.dispose();
     _priceTextEditingController.dispose();
@@ -130,7 +139,7 @@ class _AddAppState extends State<AddScreen> {
               icon: new Icon(Icons.add),
               tooltip: '등록',
               onPressed: () {
-                _addArticle();
+                _addOrder();
               },
             )),
       ],
@@ -144,175 +153,244 @@ class _AddAppState extends State<AddScreen> {
     );
   }
 
-  // 중고물품 데이터 등록
-  _addArticle() async {
-    if (_pickerImgList.length <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("물품 사진을 1장 이상 등록해주세요."),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          duration: Duration(
-            milliseconds: 2000,
-          ),
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 100,
-              right: 10,
-              left: 10),
-        ),
-      );
+  _addOrder() async {
+    String _orderIndex = '';
+    String _startArea = '';
+    String _endArea = '';
+    String _cost = '';
+    String _payMethod = '';
+    String _carKind = '';
+    String _product = '';
+    String _grade = '';
+    String _startDateTime = '';
+    String _endDateTime = '';
+    String _end1 = '';
+    String _startMethod = '';
+    String _bottom = '';
+    String _orderTel = LoginPage_test.allTel;
+    String _companyName = LoginPage_test.allComName;
 
-      return;
-    }
-    if (_pickerImgList.length > 5) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("사진은 최대 5장 까지 등록 가능합니다."),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          duration: Duration(
-            milliseconds: 2000,
-          ),
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 100,
-              right: 10,
-              left: 10),
-        ),
-      );
-
-      return;
-    }
-
-    // 업로드할 중고물품 사진 리스트
-    final List<MultipartFile> uploadImages = [];
-
-    // 선택된 카메라 앨범 사진정보 기준으로 MultipartFile 타입 생성
-    for (int i = 0; i < _pickerImgList.length; i++) {
-      File imageFile = File(_pickerImgList[i].path);
-      var stream = _pickerImgList[i].openRead();
-      var length = await imageFile.length();
-      var multipartFile = http.MultipartFile("articlesImages", stream, length,
-          filename: _pickerImgList[i].name,
-          contentType: MediaType('image', 'jpg'));
-      uploadImages.add(multipartFile);
-    }
-
-    // 등록될 중고물품 데이터 정보
-    // Articles article = Articles(
-    //     photoList: [],
-    //     profile: _serviceProvider.profile!,
-    //     profile: _titleTextEditingController,
-    //     content: _contentTextEditingController.text,
-    //     town: _serviceProvider.currentTown!,
-    //     price: _priceTextEditingController.text == ''
-    //         ? 0
-    //         : num.parse(_priceTextEditingController.text),
-    //     likeCnt: 7,
-    //     readCnt: 0,
-    //     category: _selectedCategory);
-
-    try {
-      // // 데이터 등록중 표시
-      // _serviceProvider.dataFetching();
-      //
-      // // 새로운 중고물품 데이터 등록
-      // bool result = await _serviceProvider.addArticle(uploadImages, article);
-      bool result = false;
-      if (result) {
-        Fluttertoast.showToast(
-            msg: "새로운 배차를 등록하였습니다.",
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.redAccent,
-            fontSize: 20,
-            textColor: Colors.white,
-            toastLength: Toast.LENGTH_SHORT);
-
-        // 데이터 등록 후 AddArticle 닫기
-        Navigator.pop<bool>(context, result);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("배차 등록 도중 오류가 발생하였습니다."),
-              duration: Duration(
-                milliseconds: 1000,
-              )),
+    OrderData addOrder = OrderData(
+        LoginPage_test.allID,
+        _orderIndex = DateTime.now().toString(),
+        _startArea,
+        _endArea,
+        _cost,
+        _payMethod,
+        _carKind,
+        _product,
+        _grade,
+        _startDateTime,
+        _endDateTime,
+        _end1,
+        _bottom,
+        _startMethod,
+        '', //steelCOde
+        'N', //orderYN
+        'N', //confirmYN
+        _orderTel,
+        _companyName,
+        '' //carNo
         );
+    try {
+      var res =
+          await http.post(Uri.parse(API.addOrder), body: addOrder.toJson());
+
+      if (res.statusCode == 200) {
+        var resSignup = jsonDecode(res.body);
+        if (resSignup['success'] == true) {
+          Fluttertoast.showToast(msg: '오더 등록 성공');
+          setState(() {
+            _startTextEditingController.clear();
+            _startDetailTextEditingController.clear();
+            _endTextEditingController.clear();
+            _endDetailTextEditingController.clear();
+            _gradeTextEditingController.clear();
+            _titleTextEditingController.clear();
+            _priceTextEditingController.clear();
+            _contentTextEditingController.clear();
+
+            Navigator.pop(context);
+          });
+        } else {
+          Fluttertoast.showToast(msg: '오더 등록 실패, 확인 후 다시 시도해주세요.');
+        }
       }
-    } catch (ex) {
-      print("error: $ex");
-      Fluttertoast.showToast(
-          msg: ex.toString(),
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          fontSize: 20,
-          textColor: Colors.white,
-          toastLength: Toast.LENGTH_LONG);
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  // 카레라 앨범에서 사진 선택
-  Future<void> _pickImg() async {
-    final List<XFile>? images = await _imagePicker.pickMultiImage();
-    if (images == null) return;
+  // 중고물품 데이터 등록
+  // _addArticle() async {
+  //   if (_pickerImgList.length <= 0) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("물품 사진을 1장 이상 등록해주세요."),
+  //         behavior: SnackBarBehavior.floating,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //         ),
+  //         duration: Duration(
+  //           milliseconds: 2000,
+  //         ),
+  //         margin: EdgeInsets.only(
+  //             bottom: MediaQuery.of(context).size.height - 100,
+  //             right: 10,
+  //             left: 10),
+  //       ),
+  //     );
 
-    setState(() {
-      _pickerImgList = images;
-    });
-  }
+  //     return;
+  //   }
+  //   if (_pickerImgList.length > 5) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("사진은 최대 5장 까지 등록 가능합니다."),
+  //         behavior: SnackBarBehavior.floating,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //         ),
+  //         duration: Duration(
+  //           milliseconds: 2000,
+  //         ),
+  //         margin: EdgeInsets.only(
+  //             bottom: MediaQuery.of(context).size.height - 100,
+  //             right: 10,
+  //             left: 10),
+  //       ),
+  //     );
 
-  // 선택된 사진 미리보기
-  Widget _photoPreviewWidget() {
-    if (_pickerImgList.length <= 0) return Container();
+  //     return;
+  //   }
 
-    return GridView.count(
-        shrinkWrap: true,
-        padding: EdgeInsets.all(2),
-        crossAxisCount: 5, // 최대 5개
-        mainAxisSpacing: 1,
-        crossAxisSpacing: 5,
-        children: List.generate(_pickerImgList.length, (index) {
-          //return Container();
-          // 대시라인 보더 위젯으로 감싸 선택한 사진을 표시한다.
-          return DottedBorder(
-              child: Container(
-                  child: Container(
-                    child: Stack(
-                      children: [
-                        Image.file(
-                          File(_pickerImgList[index].path),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                                padding: EdgeInsets.only(left: 20, bottom: 30),
-                                onPressed: () {
-                                  setState(() {
-                                    _pickerImgList.removeAt(index);
-                                  });
-                                },
-                                icon: SvgPicture.asset(
-                                  "assets/svg/close-circle.svg",
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(3))),
-              dashPattern: [5, 3],
-              borderType: BorderType.RRect,
-              radius: Radius.circular(3));
-        }).toList());
-  }
+  //   // 업로드할 중고물품 사진 리스트
+  //   final List<MultipartFile> uploadImages = [];
+
+  //   // 선택된 카메라 앨범 사진정보 기준으로 MultipartFile 타입 생성
+  //   for (int i = 0; i < _pickerImgList.length; i++) {
+  //     File imageFile = File(_pickerImgList[i].path);
+  //     var stream = _pickerImgList[i].openRead();
+  //     var length = await imageFile.length();
+  //     var multipartFile = http.MultipartFile("articlesImages", stream, length,
+  //         filename: _pickerImgList[i].name,
+  //         contentType: MediaType('image', 'jpg'));
+  //     uploadImages.add(multipartFile);
+  //   }
+
+  //   // 등록될 중고물품 데이터 정보
+  //   // Articles article = Articles(
+  //   //     photoList: [],
+  //   //     profile: _serviceProvider.profile!,
+  //   //     profile: _titleTextEditingController,
+  //   //     content: _contentTextEditingController.text,
+  //   //     town: _serviceProvider.currentTown!,
+  //   //     price: _priceTextEditingController.text == ''
+  //   //         ? 0
+  //   //         : num.parse(_priceTextEditingController.text),
+  //   //     likeCnt: 7,
+  //   //     readCnt: 0,
+  //   //     category: _selectedCategory);
+
+  //   try {
+  //     // // 데이터 등록중 표시
+  //     // _serviceProvider.dataFetching();
+  //     //
+  //     // // 새로운 중고물품 데이터 등록
+  //     // bool result = await _serviceProvider.addArticle(uploadImages, article);
+  //     bool result = false;
+  //     if (result) {
+  //       Fluttertoast.showToast(
+  //           msg: "새로운 배차를 등록하였습니다.",
+  //           gravity: ToastGravity.BOTTOM,
+  //           backgroundColor: Colors.redAccent,
+  //           fontSize: 20,
+  //           textColor: Colors.white,
+  //           toastLength: Toast.LENGTH_SHORT);
+
+  //       // 데이터 등록 후 AddArticle 닫기
+  //       Navigator.pop<bool>(context, result);
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text("배차 등록 도중 오류가 발생하였습니다."),
+  //             duration: Duration(
+  //               milliseconds: 1000,
+  //             )),
+  //       );
+  //     }
+  //   } catch (ex) {
+  //     print("error: $ex");
+  //     Fluttertoast.showToast(
+  //         msg: ex.toString(),
+  //         gravity: ToastGravity.BOTTOM,
+  //         backgroundColor: Colors.redAccent,
+  //         fontSize: 20,
+  //         textColor: Colors.white,
+  //         toastLength: Toast.LENGTH_LONG);
+  //   }
+  // }
+
+  // // 카레라 앨범에서 사진 선택
+  // Future<void> _pickImg() async {
+  //   final List<XFile>? images = await _imagePicker.pickMultiImage();
+  //   if (images == null) return;
+
+  //   setState(() {
+  //     _pickerImgList = images;
+  //   });
+  // }
+
+  // // 선택된 사진 미리보기
+  // Widget _photoPreviewWidget() {
+  //   if (_pickerImgList.length <= 0) return Container();
+
+  //   return GridView.count(
+  //       shrinkWrap: true,
+  //       padding: EdgeInsets.all(2),
+  //       crossAxisCount: 5, // 최대 5개
+  //       mainAxisSpacing: 1,
+  //       crossAxisSpacing: 5,
+  //       children: List.generate(_pickerImgList.length, (index) {
+  //         //return Container();
+  //         // 대시라인 보더 위젯으로 감싸 선택한 사진을 표시한다.
+  //         return DottedBorder(
+  //             child: Container(
+  //                 child: Container(
+  //                   child: Stack(
+  //                     children: [
+  //                       Image.file(
+  //                         File(_pickerImgList[index].path),
+  //                         width: 100,
+  //                         height: 100,
+  //                         fit: BoxFit.cover,
+  //                       ),
+  //                       Row(
+  //                         mainAxisAlignment: MainAxisAlignment.end,
+  //                         children: [
+  //                           IconButton(
+  //                               padding: EdgeInsets.only(left: 20, bottom: 30),
+  //                               onPressed: () {
+  //                                 setState(() {
+  //                                   _pickerImgList.removeAt(index);
+  //                                 });
+  //                               },
+  //                               icon: SvgPicture.asset(
+  //                                 "assets/svg/close-circle.svg",
+  //                               )),
+  //                         ],
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 decoration:
+  //                     BoxDecoration(borderRadius: BorderRadius.circular(3))),
+  //             dashPattern: [5, 3],
+  //             borderType: BorderType.RRect,
+  //             radius: Radius.circular(3));
+  //       }).toList());
+  // }
 
   Widget _bodyWidget() {
     return Container(

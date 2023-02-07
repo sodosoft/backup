@@ -1,5 +1,4 @@
-class API{
-
+class API {
   static const hostconnect = "http://am1009n.dothome.co.kr";
   static const hostconnectUser = "$hostconnect/user";
 
@@ -9,6 +8,9 @@ class API{
   static const login = "$hostconnect/Login.php";
   static const loginUpdate = "$hostconnect/Login_Update.php";
 
+  // order
+  static const addOrder = "$hostconnect/Order.php";
+  static const updateOrder = "$hostconnect/Order_Update.php";
 
   static const register = "$hostconnect/Register.php";
   static const validateID = "$hostconnect/user/validation.php";
@@ -22,7 +24,7 @@ class API{
   static const UpdatePassWord = "$hostconnect/Update_PassWord.php";
   static const UpdateTel = "$hostconnect/Update_Tel.php";
   static const UpdateCom = "$hostconnect/Update_Company.php";
-  static const UpdateComNo= "$hostconnect/Update_ComNo.php";
+  static const UpdateComNo = "$hostconnect/Update_ComNo.php";
   static const UpdateCarNO = "$hostconnect/Update_CarNo.php";
 
   static const DriverOrder_all = "$hostconnect/DriverOrder_all.php";
@@ -32,9 +34,9 @@ class API{
   static const UpdateConfirmYN = "$hostconnect/Order_ConfirmYN_Update.php";
 
   //상차지
-  static const StartArea  = "$hostconnect/DriverOrder_StartArea.php";
+  static const StartArea = "$hostconnect/DriverOrder_StartArea.php";
   //하차지
-  static const EndArea  = "$hostconnect/DriverOrder_EndArea.php";
+  static const EndArea = "$hostconnect/DriverOrder_EndArea.php";
   //제강사
-  static const Steel  = "$hostconnect/DriverOrder_Steel.php";
+  static const Steel = "$hostconnect/DriverOrder_Steel.php";
 }

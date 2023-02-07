@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bangtong/model/articles.dart';
+import 'package:bangtong/pages/1.dart';
 import 'package:bangtong/pages/end.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -209,7 +210,7 @@ class _EditScreen extends State<EditScreen> {
             print("배차 수정");
             _editOrder();
           } else if (value == 1) {
-            _deleteOrder();
+            deleteDalog();
             print("배차 삭제");
           }
         }),
@@ -328,7 +329,8 @@ class _EditScreen extends State<EditScreen> {
             _priceTextEditingController.clear();
             _contentTextEditingController.clear();
 
-            Navigator.pop(context);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => first()));
           });
         } else {
           Fluttertoast.showToast(msg: '오더 수정 실패, 확인 후 다시 시도해주세요.');
@@ -1088,6 +1090,31 @@ class _EditScreen extends State<EditScreen> {
     return list;
   }
 
+  Widget deleteDalog() {
+    return AlertDialog(
+      title: Text('배차 완료'),
+      content: Center(
+        child: Text('오더를 삭제하시겠습니까?'),
+      ),
+      actions: <Widget>[
+        new TextButton(
+          child: new Text("확인"),
+          onPressed: () {
+            _deleteOrder();
+            Fluttertoast.showToast(msg: '오더가 삭제 되었습니다.');
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => first()));
+          },
+        ),
+        new TextButton(
+          child: new Text("취소"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
 // Widget DateText(int flag) {
 //     return GestureDetector(
 //       onTap: () {

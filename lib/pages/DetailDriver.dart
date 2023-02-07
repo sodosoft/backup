@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bangtong/function/UpdateData.dart';
 import 'package:bangtong/pages/driver_first.dart';
+import 'package:bangtong/pages/history_D.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:direct_sms/direct_sms.dart';
@@ -190,7 +191,10 @@ class _MyAppState extends State<DetailPageDriver>
                           isSending = false;
                           _isButtonDisabled = false;
                           Future.delayed(const Duration(milliseconds: 500), () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => third_D()));
                           });
                         } else {
                           Fluttertoast.showToast(

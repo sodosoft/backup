@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "911041514448",
+    "project_id": "flutter-bts",
+    "storage_bucket": "flutter-bts.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911041514448:android:27a12727514a26971a07d5",
+        "android_client_info": {
+          "package_name": "com.example.bangtong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "911041514448-fpdj2urh64j5l0el9770ssedgq593vop.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBgGn5BLESpK5BGzrz10A5t4wMDbpHErA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "911041514448-fpdj2urh64j5l0el9770ssedgq593vop.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

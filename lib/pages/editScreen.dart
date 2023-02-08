@@ -312,6 +312,10 @@ class _EditScreen extends State<EditScreen> {
         var resSignup = jsonDecode(res.body);
         if (resSignup['success'] == true) {
           Fluttertoast.showToast(msg: '오더 수정 성공');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen()),
+          ).then((value) => setState(() {}));
         } else {
           Fluttertoast.showToast(msg: '오더 수정 실패, 확인 후 다시 시도해주세요.');
         }

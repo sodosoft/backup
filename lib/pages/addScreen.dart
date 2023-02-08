@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:bangtong/function/displaystring.dart';
 import 'package:bangtong/login/loginScreen.dart';
 import 'package:bangtong/model/orderboard.dart';
+import 'package:bangtong/pages/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:remedi_kopo/remedi_kopo.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
@@ -208,7 +210,7 @@ class _AddAppState extends State<AddScreen> {
       Fluttertoast.showToast(msg: '상차일시를 입력해주세요!');
       return;
     } else {
-      _startDateTime = _selectedDate1 + '' + _selectedTime1;
+      _startDateTime = _selectedDate1 + ' ' + _selectedTime1;
     }
 
     String _endDateTime = '';
@@ -220,7 +222,7 @@ class _AddAppState extends State<AddScreen> {
       Fluttertoast.showToast(msg: '하차일시를 입력해주세요!');
       return;
     } else {
-      _endDateTime = _selectedDate2 + '' + _selectedTime2;
+      _endDateTime = _selectedDate2 + ' ' + _selectedTime2;
     }
 
     String _end1 = ''; // 질문 사항?
@@ -236,7 +238,8 @@ class _AddAppState extends State<AddScreen> {
 
     OrderData addOrder = OrderData(
         LoginScreen.allID,
-        _orderIndex = DateTime.now().toString(),
+        _orderIndex =
+            DateFormat('yyyyMMddhhmmss').format(DateTime.now()).toString(),
         _startArea,
         _endArea,
         _cost,
@@ -279,7 +282,10 @@ class _AddAppState extends State<AddScreen> {
             _EndDateEditingController.clear();
             _EndDateEditingController.clear();
 
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+            ).then((value) => setState(() {}));
           });
         } else {
           Fluttertoast.showToast(msg: '오더 등록 실패, 확인 후 다시 시도해주세요.');

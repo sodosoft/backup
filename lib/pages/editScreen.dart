@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bangtong/model/articles.dart';
-import 'package:bangtong/pages/1.dart';
+import 'package:bangtong/pages/first.dart';
 import 'package:bangtong/pages/end.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';

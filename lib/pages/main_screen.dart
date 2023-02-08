@@ -2,7 +2,7 @@ import 'package:bangtong/pages/orderING.dart';
 import 'package:bangtong/pages/setting.dart';
 import 'package:bangtong/pages/webcost.dart';
 import 'package:flutter/material.dart';
-import 'package:bangtong/pages/1.dart';
+import 'package:bangtong/pages/first.dart';
 import 'package:bangtong/pages/board.dart';
 import 'package:bangtong/pages/history.dart';
 import 'package:bangtong/pages/4.dart';

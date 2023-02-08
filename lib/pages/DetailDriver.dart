@@ -130,6 +130,7 @@ class _MyAppState extends State<DetailPageDriver>
             SizedBox(
               height: 20,
             ),
+            Divider(),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0.0, 0, 0),
               child: Row(

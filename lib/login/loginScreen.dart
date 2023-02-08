@@ -29,6 +29,7 @@ class LoginScreen extends StatefulWidget {
 
   static late int cancelCount;
   static late String paymentDay;
+  static late String paymentYN;
 
   @override
   State<LoginScreen> createState() => _LoginPageState();
@@ -71,6 +72,7 @@ class _LoginPageState extends State<LoginScreen> {
             LoginScreen.allName = userName;
             LoginScreen.allTel = userTel;
             LoginScreen.paymentDay = paymentDay;
+            LoginScreen.paymentYN = paymentYN;
             LoginScreen.cancelCount = cancelCount;
 
             String userGrade = resLogin['userGrade'].toString();

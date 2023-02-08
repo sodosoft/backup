@@ -1,26 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:bangtong/demo/driver_first_demo.dart';
+import 'package:bangtong/demo/history_D_Demo.dart';
 import 'package:bangtong/login/loginScreen.dart';
-import 'package:bangtong/pages/driver_first.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:bangtong/pages/first.dart';
 import 'package:bangtong/pages/board.dart';
-import 'package:bangtong/pages/history.dart';
 import 'package:bangtong/pages/4.dart';
-import 'package:bangtong/pages/addScreen.dart';
-import 'package:bangtong/pages/costlist.dart';
-import 'package:bangtong/pages/setting.dart';
 
-import '../../login/login.dart';
-import '../../model/board.dart';
-import '../../model/user.dart';
 import '../function/loginUpdate.dart';
-import '../user_pref.dart';
-import 'history_D.dart';
 
 class MainScreenDriver extends StatefulWidget {
   MainScreenDriver({Key? key}) : super(key: key);
@@ -54,9 +42,9 @@ class _MainScreen extends State<MainScreenDriver> {
 
   final List<Widget> _widgetOptions = <Widget>[
     // MainScreen(),
-    Driver_first(), // 배차 등록 현황
+    Driver_first_Demo(), // 배차 등록 현황
     board(), // 게시판
-    third_D(), // 배차 내역
+    third_D_Demo(), // 배차 내역
     four(), // 상담문의
   ];
 
@@ -82,8 +70,8 @@ class _MainScreen extends State<MainScreenDriver> {
         IconButton(
           tooltip: "회원 정보",
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: ((context) => Setting())));
+            // Navigator.push(
+            //     context, MaterialPageRoute(builder: ((context) => Setting())));
           },
           icon: Icon(Icons.person),
         ),

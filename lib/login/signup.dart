@@ -1,17 +1,15 @@
 import 'dart:convert';
+import 'package:direct_sms/direct_sms.dart';
 import 'package:flutter/material.dart';
 import 'package:bangtong/api/api.dart';
-import 'package:bangtong/login/login.dart';
 import 'package:bangtong/model/user.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../model/user_test.dart';
 import '../pages/policy.dart';
 import '../pages/w1.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:intl/intl.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -22,6 +20,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _multiSelectKey = GlobalKey<FormFieldState>();
+  var directSms = DirectSms();
 
   @override
   void initState() {
@@ -113,16 +112,8 @@ class _SignupPageState extends State<SignupPage> {
     String strGrade = '';
     String strSteelCode = '';
 
-    // if (_selectedCategory == '화주') {
-    //   strGrade = 'S';
-    // } else if (_selectedCategory == '차주') {
-    //   strGrade = 'D';
-    // } else {
-    //   strGrade = 'S';
-    // }
-
     if (_groupValue == 0) {
-      strGrade = 'S';
+      strGrade = 'O';
     } else if (_groupValue == 1) {
       strGrade = 'D';
     } else if (_groupValue == 2) {
@@ -154,8 +145,8 @@ class _SignupPageState extends State<SignupPage> {
         '0',
         0, //codeCount
         0, //cancelCount
-        'Y', //loginFlag
-        'Y', //payment
+        'N', //loginFlag
+        'N', //payment
         '2023-02-22', //paymentDay
         'SODO', // introducerController.text.trim(),
         currentTime.toString(), //loginTime(현재 접속)
@@ -169,6 +160,21 @@ class _SignupPageState extends State<SignupPage> {
         var resSignup = jsonDecode(res.body);
         if (resSignup['success'] == true) {
           Fluttertoast.showToast(msg: '회원 가입 성공');
+
+          _sendSms(
+            message: userNameController.text +
+                '님' +
+                '\n' +
+                '저희 어플 가입에 감사합니다!'
+                    '\n' +
+                '서비스 이용을 위해선 결제 부탁드리겠습니다.'
+                    '\n' +
+                '계좌번호: 865301-00-071899 예금주 : 소도소프트'
+                    '\n' +
+                '사업자 번호 및 결제 정보 확인 후 바로 사용하실 수 있습니다.',
+            number: userTelController.text,
+          );
+
           setState(() {
             userIDController.clear();
             passwordController.clear();
@@ -404,13 +410,16 @@ class _SignupPageState extends State<SignupPage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: TextFormField(
-                              enabled: _groupValue != 2,
                               controller: userCompanyNoController,
-                              validator: (val) =>
-                                  val == "" ? "사업자 번호를 입력하세요!" : null,
+                              validator: (val) => val == ""
+                                  ? "사업자 번호를 입력하세요!(영업사원은 소속회사 사업자 번호)"
+                                  : val?.length == 10
+                                      ? null
+                                      : "사업자번호 10자리를 올바르게를 입력하세요!(영업사원은 소속회사 사업자 번호)",
                               obscureText: true,
                               decoration: InputDecoration(
-                                  border: InputBorder.none, hintText: '사업자 번호'),
+                                  border: InputBorder.none,
+                                  hintText: '사업자 번호 10자리를 - 없이 입력하세요'),
                             ),
                           ),
                         ),
@@ -614,5 +623,12 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
+  }
+
+  _sendSms({required String number, required String message}) async {
+    final permission = Permission.sms.request();
+    if (await permission.isGranted) {
+      directSms.sendSms(message: message, phone: number);
+    }
   }
 }

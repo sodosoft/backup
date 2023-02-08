@@ -1,35 +1,25 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:bangtong/login/loginScreen.dart';
-import 'package:bangtong/pages/driver_first.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:bangtong/pages/first.dart';
-import 'package:bangtong/pages/board.dart';
-import 'package:bangtong/pages/history.dart';
-import 'package:bangtong/pages/4.dart';
-import 'package:bangtong/pages/addScreen.dart';
-import 'package:bangtong/pages/costlist.dart';
+import 'package:bangtong/demo/first_demo.dart';
+import 'package:bangtong/demo/historyDemo.dart';
+import 'package:bangtong/demo/orderINGDemo.dart';
 import 'package:bangtong/pages/setting.dart';
+import 'package:bangtong/demo/webcostDemo.dart';
+import 'package:flutter/material.dart';
+import 'package:bangtong/pages/board.dart';
+import 'package:bangtong/pages/4.dart';
 
-import '../../login/login.dart';
-import '../../model/board.dart';
-import '../../model/user.dart';
 import '../function/loginUpdate.dart';
-import '../user_pref.dart';
-import 'history_D.dart';
+import 'dart:async';
 
-class MainScreenDriver extends StatefulWidget {
-  MainScreenDriver({Key? key}) : super(key: key);
+import '../login/loginScreen.dart';
+
+class MainScreenDemo extends StatefulWidget {
+  const MainScreenDemo({Key? key}) : super(key: key);
 
   @override
-  State<MainScreenDriver> createState() => _MainScreen();
+  State<MainScreenDemo> createState() => _MainScreen();
 }
 
-class _MainScreen extends State<MainScreenDriver> {
+class _MainScreen extends State<MainScreenDemo> {
   Timer? _timer;
 
   @override
@@ -52,12 +42,15 @@ class _MainScreen extends State<MainScreenDriver> {
     });
   }
 
+  // 바닥 메뉴
   final List<Widget> _widgetOptions = <Widget>[
     // MainScreen(),
-    Driver_first(), // 배차 등록 현황
+    firstDemo(), // 배차 등록 현황
+    orderINGDemo(), // 배차 진행 중
     board(), // 게시판
-    third_D(), // 배차 내역
-    four(), // 상담문의
+    WebView3Demo(), //단가표
+    thirdDemo(), // 배차 내역
+    four() // 상담 문의
   ];
 
   int _selectedIndex = 0; // 선택된 페이지의 인덱스 넘버 초기화
@@ -76,14 +69,14 @@ class _MainScreen extends State<MainScreenDriver> {
       elevation: 1,
       title: FittedBox(
         fit: BoxFit.fitWidth,
-        child: Text(LoginScreen.allName + "님,안녕하세요!"),
+        child: Text(LoginScreen.allName + " 님,안녕하세요!"),
       ),
       actions: [
         IconButton(
           tooltip: "회원 정보",
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: ((context) => Setting())));
+            // Navigator.push(
+            //     context, MaterialPageRoute(builder: ((context) => Setting())));
           },
           icon: Icon(Icons.person),
         ),
@@ -111,7 +104,7 @@ class _MainScreen extends State<MainScreenDriver> {
       child: Scaffold(
         appBar: _appbarWidget(),
         body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
-        // bottom navigation 선언
+        //bottom navigation 선언
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -119,8 +112,16 @@ class _MainScreen extends State<MainScreenDriver> {
               label: '홈',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.handshake_outlined),
+              label: '배차 진행',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.info),
               label: '공지사항',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.auto_graph),
+              label: '단가표',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.list_alt),
@@ -144,7 +145,6 @@ class _MainScreen extends State<MainScreenDriver> {
   }
 
   Future<bool> offDialog(flag) async {
-    BuildContext dialogContext;
     return await showDialog(
         context: context,
         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
@@ -157,7 +157,7 @@ class _MainScreen extends State<MainScreenDriver> {
             //Dialog Main Title
             title: Column(
               children: <Widget>[
-                new Text(flag == 1 ? "로그아웃" : "시간 초과"),
+                new Text("로그아웃"),
               ],
             ),
             //

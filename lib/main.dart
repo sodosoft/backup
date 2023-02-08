@@ -75,8 +75,7 @@ class _MyAppState extends State<MyApp> {
 
     // Android용 초기화 설정
     // 무조건 해야함 약속과 같음
-    var initialzationsettingsAndroid =
-        AndroidInitializationSettings('@mipmap/bts');
+    var initialzationsettingsAndroid = AndroidInitializationSettings('bts');
     var initializationSettings =
         InitializationSettings(android: initialzationsettingsAndroid);
 

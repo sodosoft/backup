@@ -105,7 +105,7 @@ class _MyAppState extends State<firstDemo> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('데모 화면 표시된 데이터는 가상 데이터 입니다. 결제 후 이용 가능합니다.'),
+                Text('데모 화면 표시된 데이터는 가상 데이터 입니다.'),
                 // Text('다음 결제일: $strNextDday'),
                 // SizedBox(width: 5),
                 // Text('D$strDday'),

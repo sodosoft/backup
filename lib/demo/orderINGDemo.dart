@@ -24,7 +24,7 @@ class _MyAppState extends State<orderINGDemo> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              '데모 화면입니다. \n 차주가 요청한 오더가 이곳에 표시 됩니다.',
+              ' 데모 화면입니다. \n 차주가 요청한 오더가\n 이곳에 표시 됩니다.',
               style: TextStyle(
                 fontSize: 30,
                 color: Colors.blue,

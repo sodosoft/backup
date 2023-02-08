@@ -1,26 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:bangtong/model/articles.dart';
 import 'package:bangtong/pages/first.dart';
-import 'package:bangtong/pages/end.dart';
+import 'package:bangtong/pages/main_screen.dart';
+import 'package:day_night_time_picker/lib/constants.dart';
+import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-// import 'package:app/provider/service_provider.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-
 import '../api/api.dart';
 import '../login/loginScreen.dart';
 import '../model/orderboard.dart';
@@ -82,6 +72,9 @@ class _EditScreen extends State<EditScreen> {
   String _selectedTime1 = '';
   String _selectedDate2 = '';
   String _selectedTime2 = '';
+
+  TimeOfDay _time =
+      TimeOfDay.now().replacing(hour: DateTime.now().hour, minute: 00);
 
   // 지불방식
   List<String> dropdownList1 = ['후불', '별도합의', '선불'];
@@ -263,7 +256,7 @@ class _EditScreen extends State<EditScreen> {
       Fluttertoast.showToast(msg: '상차일시를 입력해주세요!');
       return;
     } else {
-      _startDateTime = _selectedDate1 + '' + _selectedTime1;
+      _startDateTime = _selectedDate1 + ' ' + _selectedTime1;
     }
 
     String _endDateTime = '';
@@ -275,7 +268,7 @@ class _EditScreen extends State<EditScreen> {
       Fluttertoast.showToast(msg: '하차일시를 입력해주세요!');
       return;
     } else {
-      _endDateTime = _selectedDate2 + '' + _selectedTime2;
+      _endDateTime = _selectedDate2 + ' ' + _selectedTime2;
     }
 
     String _end1 = ''; // 질문 사항?
@@ -319,19 +312,6 @@ class _EditScreen extends State<EditScreen> {
         var resSignup = jsonDecode(res.body);
         if (resSignup['success'] == true) {
           Fluttertoast.showToast(msg: '오더 수정 성공');
-          setState(() {
-            _startTextEditingController.clear();
-            _startDetailTextEditingController.clear();
-            _endTextEditingController.clear();
-            _endDetailTextEditingController.clear();
-            _gradeTextEditingController.clear();
-            _titleTextEditingController.clear();
-            _priceTextEditingController.clear();
-            _contentTextEditingController.clear();
-
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => first()));
-          });
         } else {
           Fluttertoast.showToast(msg: '오더 수정 실패, 확인 후 다시 시도해주세요.');
         }
@@ -343,30 +323,24 @@ class _EditScreen extends State<EditScreen> {
   }
 
   _deleteOrder() async {
-    int _orderIndex = 0;
+    String _orderIndex = '';
+    _orderIndex = widget.postData.orderIndex;
 
     try {
-      var res = await http.post(Uri.parse(API.updateOrder),
-          body: {'orderId': LoginScreen.allID, 'orderIndex': _orderIndex});
+      var res = await http
+          .post(Uri.parse(API.deleteOrder), body: {'orderIndex': _orderIndex});
 
       if (res.statusCode == 200) {
         var resSignup = jsonDecode(res.body);
         if (resSignup['success'] == true) {
-          Fluttertoast.showToast(msg: '오더 수정 성공');
-          setState(() {
-            _startTextEditingController.clear();
-            _startDetailTextEditingController.clear();
-            _endTextEditingController.clear();
-            _endDetailTextEditingController.clear();
-            _gradeTextEditingController.clear();
-            _titleTextEditingController.clear();
-            _priceTextEditingController.clear();
-            _contentTextEditingController.clear();
+          Fluttertoast.showToast(msg: '오더 삭제 성공');
 
-            Navigator.pop(context);
-          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen()),
+          ).then((value) => setState(() {}));
         } else {
-          Fluttertoast.showToast(msg: '오더 수정 실패, 확인 후 다시 시도해주세요.');
+          Fluttertoast.showToast(msg: '오더 삭제 실패, 확인 후 다시 시도해주세요.');
         }
       }
     } catch (e) {
@@ -772,18 +746,40 @@ class _EditScreen extends State<EditScreen> {
                                 ),
                                 child: Text('상차시간'),
                                 onPressed: () {
-                                  Future<TimeOfDay?> selectedTime =
-                                      showTimePicker(
-                                          context: context,
-                                          initialEntryMode:
-                                              TimePickerEntryMode.input,
-                                          initialTime: TimeOfDay.now());
-                                  selectedTime.then((timeOfDay) {
-                                    setState(() {
-                                      _selectedTime1 =
-                                          '${timeOfDay?.hour}:${timeOfDay?.minute}';
-                                    });
-                                  });
+                                  Navigator.of(context).push(showPicker(
+                                      value: _time,
+                                      onChange: (TimeOfDay time) {
+                                        setState(() {
+                                          _time = time;
+                                          _selectedTime1 =
+                                              _time.hour.toString() +
+                                                  ':' +
+                                                  _time.minute.toString();
+                                        });
+                                        print(_time);
+                                      },
+                                      onChangeDateTime: (DateTime dateTime) {},
+                                      is24HrFormat: false,
+                                      iosStylePicker: false,
+                                      disableHour: false,
+                                      minuteInterval: MinuteInterval.FIFTEEN,
+                                      sunAsset:
+                                          Image.asset("assets/images/sun.png"),
+                                      moonAsset:
+                                          Image.asset("assets/images/moon.png"),
+                                      displayHeader: true));
+                                  // Future<TimeOfDay?> selectedTime =
+                                  //     showTimePicker(
+                                  //         context: context,
+                                  //         initialEntryMode:
+                                  //             TimePickerEntryMode.input,
+                                  //         initialTime: TimeOfDay.now());
+                                  // selectedTime.then((timeOfDay) {
+                                  //   setState(() {
+                                  //     _selectedTime1 =
+                                  //         '${timeOfDay?.hour}:${timeOfDay?.minute}';
+                                  //   });
+                                  // });
                                 },
                               ),
                               Text('$_selectedTime1'),
@@ -885,18 +881,40 @@ class _EditScreen extends State<EditScreen> {
                                 ),
                                 child: Text('하차시간'),
                                 onPressed: () {
-                                  Future<TimeOfDay?> selectedTime =
-                                      showTimePicker(
-                                          context: context,
-                                          initialEntryMode:
-                                              TimePickerEntryMode.input,
-                                          initialTime: TimeOfDay.now());
-                                  selectedTime.then((timeOfDay) {
-                                    setState(() {
-                                      _selectedTime2 =
-                                          '${timeOfDay?.hour}:${timeOfDay?.minute}';
-                                    });
-                                  });
+                                  Navigator.of(context).push(showPicker(
+                                      value: _time,
+                                      onChange: (TimeOfDay time) {
+                                        setState(() {
+                                          _time = time;
+                                          _selectedTime2 =
+                                              _time.hour.toString() +
+                                                  ':' +
+                                                  _time.minute.toString();
+                                        });
+                                        print(_time);
+                                      },
+                                      onChangeDateTime: (DateTime dateTime) {},
+                                      is24HrFormat: false,
+                                      iosStylePicker: false,
+                                      disableHour: false,
+                                      minuteInterval: MinuteInterval.FIFTEEN,
+                                      sunAsset:
+                                          Image.asset("assets/images/sun.png"),
+                                      moonAsset:
+                                          Image.asset("assets/images/moon.png"),
+                                      displayHeader: true));
+                                  // Future<TimeOfDay?> selectedTime =
+                                  //     showTimePicker(
+                                  //         context: context,
+                                  //         initialEntryMode:
+                                  //             TimePickerEntryMode.input,
+                                  //         initialTime: TimeOfDay.now());
+                                  // selectedTime.then((timeOfDay) {
+                                  //   setState(() {
+                                  //     _selectedTime2 =
+                                  //         '${timeOfDay?.hour}:${timeOfDay?.minute}';
+                                  //   });
+                                  // });
                                 },
                               ),
                               Text('$_selectedTime2'),
@@ -1090,30 +1108,49 @@ class _EditScreen extends State<EditScreen> {
     return list;
   }
 
-  Widget deleteDalog() {
-    return AlertDialog(
-      title: Text('배차 완료'),
-      content: Center(
-        child: Text('오더를 삭제하시겠습니까?'),
-      ),
-      actions: <Widget>[
-        new TextButton(
-          child: new Text("확인"),
-          onPressed: () {
-            _deleteOrder();
-            Fluttertoast.showToast(msg: '오더가 삭제 되었습니다.');
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => first()));
-          },
-        ),
-        new TextButton(
-          child: new Text("취소"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    );
+  Future<bool> deleteDalog() async {
+    return await showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                new Text("오더 삭제"),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('오더를 삭제하시겠습니까?'),
+              ],
+            ),
+            actions: <Widget>[
+              new TextButton(
+                child: new Text("확인"),
+                onPressed: () {
+                  _deleteOrder();
+                  Fluttertoast.showToast(msg: '오더가 삭제 되었습니다.');
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MainScreen()));
+                },
+              ),
+              new TextButton(
+                child: new Text("취소"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 // Widget DateText(int flag) {
 //     return GestureDetector(

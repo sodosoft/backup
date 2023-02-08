@@ -1,16 +1,9 @@
-import 'dart:convert';
-
 import 'package:bangtong/login/loginScreen.dart';
 import 'package:bangtong/pages/end.dart';
 import 'package:bangtong/pages/start.dart';
 import 'package:bangtong/pages/steel.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:bangtong/api/api.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
-import '../../model/orderboard.dart';
 
 class Driver_first extends StatefulWidget {
   const Driver_first({Key? key}) : super(key: key);
@@ -20,53 +13,6 @@ class Driver_first extends StatefulWidget {
 }
 
 class _MyAppState extends State<Driver_first> {
-  Future<List<OrderData>?> _getPost() async {
-    try {
-      var respone = await http.post(Uri.parse(API.orderBoard), body: {
-        'orderID': LoginScreen.allID,
-      });
-
-      if (respone.statusCode == 200) {
-        final result = utf8.decode(respone.bodyBytes);
-        List<dynamic> json = jsonDecode(result);
-        List<OrderData> boardList = [];
-
-        for (var item in json.reversed) {
-          OrderData boardData = OrderData(
-              item['orderID'],
-              item['orderIndex'],
-              item['startArea'],
-              item['endArea'],
-              item['cost'],
-              item['payMethod'],
-              item['carKind'],
-              item['product'],
-              item['grade'],
-              item['startDateTime'],
-              item['endDateTime'],
-              item['end1'],
-              item['bottom'],
-              item['startMethod'],
-              item['steelCode'],
-              item['orderYN'],
-              item['confirmYN'],
-              item['orderTel'],
-              item['companyName'],
-              item['userCarNo']);
-          boardList.add(boardData);
-        }
-
-        return boardList;
-      } else {
-        Fluttertoast.showToast(msg: '데이터 로딩 실패!');
-        return null;
-      }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
-
   String strDday = '';
   String strNextDday = '';
 
@@ -86,10 +32,6 @@ class _MyAppState extends State<Driver_first> {
           int.parse(dtToday.difference(DateTime.parse(date)).inDays.toString());
       strDday = difference.toString();
     }
-  }
-
-  Future refresh() async {
-    _getPost();
   }
 
   @override

@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bangtong/pages/addOrder.dart';
 import 'package:bangtong/pages/history.dart';
-import 'package:bangtong/pages/setting.dart';
-import 'package:bangtong/pages/weightDataScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangtong/api/api.dart';

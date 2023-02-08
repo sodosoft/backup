@@ -10,14 +10,14 @@ import 'package:bangtong/pages/4.dart';
 
 import '../function/loginUpdate.dart';
 
-class MainScreenDriver extends StatefulWidget {
-  MainScreenDriver({Key? key}) : super(key: key);
+class MainScreenDriverDemo extends StatefulWidget {
+  MainScreenDriverDemo({Key? key}) : super(key: key);
 
   @override
-  State<MainScreenDriver> createState() => _MainScreen();
+  State<MainScreenDriverDemo> createState() => _MainScreen();
 }
 
-class _MainScreen extends State<MainScreenDriver> {
+class _MainScreen extends State<MainScreenDriverDemo> {
   Timer? _timer;
 
   @override

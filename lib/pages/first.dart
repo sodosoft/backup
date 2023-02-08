@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:bangtong/pages/addOrder.dart';
-import 'package:bangtong/pages/setting.dart';
-import 'package:bangtong/pages/weightDataScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:bangtong/api/api.dart';
@@ -23,6 +20,8 @@ class first extends StatefulWidget {
 }
 
 class _MyAppState extends State<first> {
+  List<OrderData> boardList = [];
+
   Future<List<OrderData>?> _getPost() async {
     try {
       var respone = await http.post(Uri.parse(API.orderBoard), body: {
@@ -71,7 +70,61 @@ class _MyAppState extends State<first> {
   }
 
   Future refresh() async {
-    _getPost();
+    try {
+      setState(() {
+        if (!boardList.isEmpty) {
+          boardList.clear();
+        }
+      });
+      var respone = await http.post(Uri.parse(API.orderBoard), body: {
+        'orderID': LoginScreen.allID,
+      });
+
+      if (respone.statusCode == 200) {
+        final result = utf8.decode(respone.bodyBytes);
+        List<dynamic> json = jsonDecode(result);
+        List<OrderData> boardList = [];
+
+        for (var item in json.reversed) {
+          OrderData boardData = OrderData(
+              item['orderID'],
+              item['orderIndex'],
+              item['startArea'],
+              item['endArea'],
+              item['cost'],
+              item['payMethod'],
+              item['carKind'],
+              item['product'],
+              item['grade'],
+              item['startDateTime'],
+              item['endDateTime'],
+              item['end1'],
+              item['bottom'],
+              item['startMethod'],
+              item['steelCode'],
+              item['orderYN'],
+              item['confirmYN'],
+              item['orderTel'],
+              item['companyName'],
+              item['userCarNo']);
+          boardList.add(boardData);
+        }
+
+        final data = boardList;
+
+        setState(() {
+          this.boardList = data;
+        });
+
+        return boardList;
+      } else {
+        Fluttertoast.showToast(msg: '데이터 로딩 실패!');
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   String strDday = '';
@@ -79,8 +132,6 @@ class _MyAppState extends State<first> {
 
   @override
   void initState() {
-    super.initState();
-
     if (LoginScreen.paymentDay == null) {
     } else {
       var dtToday = DateTime.now();
@@ -93,6 +144,8 @@ class _MyAppState extends State<first> {
           int.parse(dtToday.difference(DateTime.parse(date)).inDays.toString());
       strDday = difference.toString();
     }
+    refresh();
+    super.initState();
   }
 
   @override

@@ -1,27 +1,17 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:bangtong/login/login.dart';
+import 'package:bangtong/function/displaystring.dart';
 import 'package:bangtong/login/loginScreen.dart';
-import 'package:bangtong/model/articles.dart';
 import 'package:bangtong/model/orderboard.dart';
-import 'package:bangtong/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-// import 'package:app/provider/service_provider.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:day_night_time_picker/day_night_time_picker.dart';
+import 'package:day_night_time_picker/lib/constants.dart';
 
 import '../api/api.dart';
 
@@ -69,6 +59,9 @@ class _AddAppState extends State<AddScreen> {
   String _selectedTime1 = '';
   String _selectedDate2 = '';
   String _selectedTime2 = '';
+
+  TimeOfDay _time =
+      TimeOfDay.now().replacing(hour: DateTime.now().hour, minute: 00);
 
   // 지불방식
   List<String> dropdownList1 = ['후불', '별도합의', '선불'];
@@ -188,7 +181,7 @@ class _AddAppState extends State<AddScreen> {
     _endArea =
         _endTextEditingController.text + _endDetailTextEditingController.text;
     String _cost = '';
-    _cost = _priceTextEditingController.text;
+    _cost = DisplayString.displayCost(_priceTextEditingController.text);
 
     String _payMethod = '';
     _payMethod = selectedDropdown1;
@@ -695,18 +688,40 @@ class _AddAppState extends State<AddScreen> {
                                 ),
                                 child: Text('상차시간'),
                                 onPressed: () {
-                                  Future<TimeOfDay?> selectedTime =
-                                      showTimePicker(
-                                          context: context,
-                                          initialEntryMode:
-                                              TimePickerEntryMode.input,
-                                          initialTime: TimeOfDay.now());
-                                  selectedTime.then((timeOfDay) {
-                                    setState(() {
-                                      _selectedTime1 =
-                                          '${timeOfDay?.hour}:${timeOfDay?.minute}';
-                                    });
-                                  });
+                                  Navigator.of(context).push(showPicker(
+                                      value: _time,
+                                      onChange: (TimeOfDay time) {
+                                        setState(() {
+                                          _time = time;
+                                          _selectedTime1 =
+                                              _time.hour.toString() +
+                                                  ':' +
+                                                  _time.minute.toString();
+                                        });
+                                        print(_time);
+                                      },
+                                      onChangeDateTime: (DateTime dateTime) {},
+                                      is24HrFormat: false,
+                                      iosStylePicker: false,
+                                      disableHour: false,
+                                      minuteInterval: MinuteInterval.FIFTEEN,
+                                      sunAsset:
+                                          Image.asset("assets/images/sun.png"),
+                                      moonAsset:
+                                          Image.asset("assets/images/moon.png"),
+                                      displayHeader: true));
+                                  // Future<TimeOfDay?> selectedTime =
+                                  //     showTimePicker(
+                                  //         context: context,
+                                  //         initialEntryMode:
+                                  //             TimePickerEntryMode.input,
+                                  //         initialTime: TimeOfDay.now());
+                                  // selectedTime.then((timeOfDay) {
+                                  //   setState(() {
+                                  //     _selectedTime1 =
+                                  //         '${timeOfDay?.hour}:${timeOfDay?.minute}';
+                                  //   });
+                                  // });
                                 },
                               ),
                               Text('$_selectedTime1'),
@@ -808,18 +823,40 @@ class _AddAppState extends State<AddScreen> {
                                 ),
                                 child: Text('하차시간'),
                                 onPressed: () {
-                                  Future<TimeOfDay?> selectedTime =
-                                      showTimePicker(
-                                          context: context,
-                                          initialEntryMode:
-                                              TimePickerEntryMode.input,
-                                          initialTime: TimeOfDay.now());
-                                  selectedTime.then((timeOfDay) {
-                                    setState(() {
-                                      _selectedTime2 =
-                                          '${timeOfDay?.hour}:${timeOfDay?.minute}';
-                                    });
-                                  });
+                                  Navigator.of(context).push(showPicker(
+                                      value: _time,
+                                      onChange: (TimeOfDay time) {
+                                        setState(() {
+                                          _time = time;
+                                          _selectedTime2 =
+                                              _time.hour.toString() +
+                                                  ':' +
+                                                  _time.minute.toString();
+                                        });
+                                        print(_time);
+                                      },
+                                      onChangeDateTime: (DateTime dateTime) {},
+                                      is24HrFormat: false,
+                                      iosStylePicker: false,
+                                      disableHour: false,
+                                      minuteInterval: MinuteInterval.FIFTEEN,
+                                      sunAsset:
+                                          Image.asset("assets/images/sun.png"),
+                                      moonAsset:
+                                          Image.asset("assets/images/moon.png"),
+                                      displayHeader: true));
+                                  // Future<TimeOfDay?> selectedTime =
+                                  //     showTimePicker(
+                                  //         context: context,
+                                  //         initialEntryMode:
+                                  //             TimePickerEntryMode.input,
+                                  //         initialTime: TimeOfDay.now());
+                                  // selectedTime.then((timeOfDay) {
+                                  //   setState(() {
+                                  //     _selectedTime2 =
+                                  //         '${timeOfDay?.hour}:${timeOfDay?.minute}';
+                                  //   });
+                                  // });
                                 },
                               ),
                               Text('$_selectedTime2'),
@@ -1071,6 +1108,7 @@ class _AddAppState extends State<AddScreen> {
     result.text = '${model.address!} ${model.buildingName!}';
     // '${model.zonecode!} ${model.address!} ${model.buildingName!}';
   }
+}
 
 // Widget DateText(int flag) {
   //   return GestureDetector(
@@ -1166,4 +1204,3 @@ class _AddAppState extends State<AddScreen> {
   //     return _EstimatedEditingController.text =
   //         serverFormater.format(displayDate);
   // }
-}

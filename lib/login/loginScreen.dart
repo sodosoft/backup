@@ -1,15 +1,13 @@
 import 'dart:convert';
 
+import 'package:bangtong/demo/main_screen_demo.dart';
+import 'package:bangtong/demo/main_screen_driver_demo.dart';
 import 'package:bangtong/function/loginUpdate.dart';
 import 'package:bangtong/pages/loginflag.dart';
-import 'package:bangtong/pages/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:bangtong/login/signup.dart';
 import 'package:bangtong/pages/main_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:bangtong/pages/main_screen_driver.dart';
 
@@ -102,6 +100,21 @@ class _LoginPageState extends State<LoginScreen> {
             {
               Fluttertoast.showToast(msg: '결제 부탁 드립니다!');
               //데모 화면
+              if (userGrade == 'D') {
+                // 차주 전용 화면
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MainScreenDriverDemo()));
+              } else {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainScreenDemo()));
+              }
+
+              setState(() {
+                idController.clear();
+                passwordController.clear();
+              });
             }
           }
         } else {

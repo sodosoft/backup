@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  day_night_time_picker:
+    dependency: "direct main"
+    description:
+      name: day_night_time_picker
+      sha256: "68dacdc84b4257606fda302b40d159c5a44d87b84531d9fcc3d67afe4d35c0ac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.5"
   direct_sms:
     dependency: "direct main"
     description:

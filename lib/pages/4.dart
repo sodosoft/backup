@@ -32,7 +32,7 @@ class _MyAppState extends State<four> {
               icon: const Icon(Icons.chat),
               iconSize: 50.0,
               onPressed: () {
-                setState(() {});
+                Fluttertoast.showToast(msg: '서비스 준비중입니다.');
               },
             ),
             Text('채팅으로 문의하기'),

@@ -46,18 +46,32 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        releaseWithSignedKey {
+            storeFile file(SIGNED_STORE_FILE)
+            storePassword SIGNED_STORE_PASSWORD
+            keyAlias SIGNED_KEY_ALIAS
+            keyPassword SIGNED_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
+            //isMinifyEnabled = true
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseWithSignedKey
+        }
+        debug{
+            signingConfig signingConfigs.releaseWithSignedKey
         }
     }
 
     dependencies {
         // Import the Firebase BoM
-        implementation platform('com.google.firebase:firebase-bom:31.2.0')
-        implementation 'cpm.android.tools.build:gradle:3.6.3'
+        implementation platform('com.google.firebase:firebase-bom:31.2.0')       
 
         // TODO: Add the dependencies for Firebase products you want to use
         // When using the BoM, don't specify versions in Firebase dependencies

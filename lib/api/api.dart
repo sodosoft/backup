@@ -27,6 +27,7 @@ class API {
   static const UpdateCom = "$hostconnect/Update_Company.php";
   static const UpdateComNo = "$hostconnect/Update_ComNo.php";
   static const UpdateCarNO = "$hostconnect/Update_CarNo.php";
+  static const UpdatedeviceID = "$hostconnect/Update_deviceID.php";
 
   static const DriverOrder_all = "$hostconnect/DriverOrder_all.php";
 

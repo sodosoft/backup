@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bangtong/demo/main_screen_demo.dart';
 import 'package:bangtong/demo/main_screen_driver_demo.dart';
+import 'package:bangtong/function/getDeviceID.dart';
 import 'package:bangtong/function/loginUpdate.dart';
 import 'package:bangtong/pages/loginflag.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class LoginScreen extends StatefulWidget {
   static late int cancelCount;
   static late String paymentDay;
   static late String paymentYN;
+  static late String deviceID;
 
   @override
   State<LoginScreen> createState() => _LoginPageState();
@@ -52,6 +54,9 @@ class _LoginPageState extends State<LoginScreen> {
           // await RememberUser.saveRememberUserInfo(userInfo);
           if (resLogin['loginFlag'].toString() == 'Y') {
             Fluttertoast.showToast(msg: '중복 접속입니다. 중복 해제 부탁 드립니다!');
+          } else if (resLogin['deviceID'] ==
+              GetDeviceID.getDeviceUniqueId().toString()) {
+            Fluttertoast.showToast(msg: '등록된 장치가 아닙니다. \n 장치 정보를 확인 부탁드립니다!');
           } else {
             String userName = resLogin['userName'].toString();
             String userPW = resLogin['userPassword'].toString();
@@ -60,6 +65,7 @@ class _LoginPageState extends State<LoginScreen> {
             String paymentYN = resLogin['payment'].toString();
             String paymentDay = resLogin['paymentDay'].toString();
             int cancelCount = resLogin['cancelCount'];
+            String deviceID = resLogin['deviceID'].toString();
 
             LoginUpdate.LoginflagChange(userID, 'Y');
 
@@ -72,6 +78,7 @@ class _LoginPageState extends State<LoginScreen> {
             LoginScreen.paymentDay = paymentDay;
             LoginScreen.paymentYN = paymentYN;
             LoginScreen.cancelCount = cancelCount;
+            LoginScreen.deviceID = deviceID;
 
             String userGrade = resLogin['userGrade'].toString();
 

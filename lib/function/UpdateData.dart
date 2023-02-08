@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/api.dart';
 
-class UpdateData{
+class UpdateData {
   String loginID;
 
   UpdateData(this.loginID);
@@ -19,12 +19,9 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -41,12 +38,9 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -63,12 +57,9 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -85,12 +76,9 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -107,12 +95,28 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
+      } else {
+        result = false;
       }
-      else
-      {
+    }
+    return result;
+  }
+
+  static deviceIDChange(userID, deviceID) async {
+    bool result = false;
+
+    var res = await http.post(Uri.parse(API.UpdatedeviceID), body: {
+      'userID': userID,
+      'deviceID': deviceID,
+    });
+
+    if (res.statusCode == 200) {
+      var resLogin = jsonDecode(res.body);
+      if (resLogin['success'] == true) {
+        result = true;
+      } else {
         result = false;
       }
     }
@@ -122,19 +126,14 @@ class UpdateData{
   static calcelCountChange(userID, cancelCount) async {
     bool result = false;
 
-    var res = await http.post(Uri.parse(API.UpdateCancelCount), body: {
-      'userID': userID,
-      'cancelCount': cancelCount
-    });
+    var res = await http.post(Uri.parse(API.UpdateCancelCount),
+        body: {'userID': userID, 'cancelCount': cancelCount});
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -144,19 +143,14 @@ class UpdateData{
   static orederYNChange(orderIndex, orderYN) async {
     bool result = false;
 
-    var res = await http.post(Uri.parse(API.UpdateOrderYN), body: {
-      'orderIndex': orderIndex,
-      'orderYN': orderYN
-    });
+    var res = await http.post(Uri.parse(API.UpdateOrderYN),
+        body: {'orderIndex': orderIndex, 'orderYN': orderYN});
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }
@@ -174,12 +168,9 @@ class UpdateData{
 
     if (res.statusCode == 200) {
       var resLogin = jsonDecode(res.body);
-      if (resLogin['success'] == true)
-      {
+      if (resLogin['success'] == true) {
         result = true;
-      }
-      else
-      {
+      } else {
         result = false;
       }
     }

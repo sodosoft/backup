@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:bangtong/api/api.dart';
+import 'package:bangtong/function/UpdateData.dart';
+import 'package:bangtong/function/getDeviceID.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -45,8 +48,7 @@ class _MyAppState extends State<loginFlag> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: TextFormField(
                           controller: idController,
-                          validator: (val) =>
-                          val == "" ? "아이디를 입력하세요!" : null,
+                          validator: (val) => val == "" ? "아이디를 입력하세요!" : null,
                           decoration: InputDecoration(
                               border: InputBorder.none, hintText: '아이디'),
                         ),
@@ -68,7 +70,7 @@ class _MyAppState extends State<loginFlag> {
                         child: TextFormField(
                           controller: passwordController,
                           validator: (val) =>
-                          val == "" ? "비밀 번호를 입력하세요!" : null,
+                              val == "" ? "비밀 번호를 입력하세요!" : null,
                           obscureText: true,
                           decoration: InputDecoration(
                               border: InputBorder.none, hintText: '비밀번호'),
@@ -97,9 +99,7 @@ class _MyAppState extends State<loginFlag> {
                       Fluttertoast.showToast(msg: '중복 접속이 해제되었습니다!');
 
                       Navigator.pop(context);
-                    }
-                    else
-                    {
+                    } else {
                       Fluttertoast.showToast(msg: '아이디와 비밀 번호를 확인해주세요!');
                     }
                   }
@@ -130,7 +130,53 @@ class _MyAppState extends State<loginFlag> {
               height: 10,
             ),
             GestureDetector(
-              onTap: ()  {
+              onTap: () async {
+                if (formKey.currentState!.validate()) {
+                  var res = await http.post(Uri.parse(API.login), body: {
+                    'userID': idController.text.trim(),
+                    'userPassword': passwordController.text.trim()
+                  });
+
+                  if (res.statusCode == 200) {
+                    var resLogin = jsonDecode(res.body);
+                    if (resLogin['success'] == true) {
+                      UpdateData.deviceIDChange(idController.text,
+                          GetDeviceID.getDeviceUniqueId().toString());
+                      Fluttertoast.showToast(msg: '접속 장비의 정보가 변경되었습니다!');
+
+                      Navigator.pop(context);
+                    } else {
+                      Fluttertoast.showToast(msg: '아이디와 비밀 번호를 확인해주세요!');
+                    }
+                  }
+                }
+              },
+              child: Container(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Center(
+                      child: Text(
+                        '접속 장비 정보 교체',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            GestureDetector(
+              onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
@@ -160,4 +206,3 @@ class _MyAppState extends State<loginFlag> {
     );
   }
 }
-

@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:bangtong/function/getDeviceID.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:direct_sms/direct_sms.dart';
 import 'package:flutter/material.dart';
 import 'package:bangtong/api/api.dart';
@@ -132,6 +135,9 @@ class _SignupPageState extends State<SignupPage> {
     var currentTime =
         new DateTime(now.year, now.month, now.day, now.hour, now.minute);
 
+    String DeviceID = '';
+    DeviceID = GetDeviceID.getDeviceUniqueId().toString();
+
     User userModel = User(
         userIDController.text.trim(),
         passwordController.text.trim(),
@@ -150,7 +156,7 @@ class _SignupPageState extends State<SignupPage> {
         '2023-02-22', //paymentDay
         'SODO', // introducerController.text.trim(),
         currentTime.toString(), //loginTime(현재 접속)
-        'DE');
+        DeviceID);
 
     try {
       var res =

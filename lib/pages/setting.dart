@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bangtong/function/UpdateData.dart';
+import 'package:bangtong/widgets/round-button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -22,6 +23,7 @@ class _SignupPageState extends State<Setting> {
   var userCompanyNameController = TextEditingController();
   var userCompanyNoController = TextEditingController();
   var userCarNoController = TextEditingController();
+  var userDeviceIDController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _SignupPageState extends State<Setting> {
     userCompanyNameController.text = LoginScreen.allComName;
     userCompanyNoController.text = LoginScreen.allComNo;
     userCarNoController.text = LoginScreen.allCarNo;
+    userDeviceIDController.text = LoginScreen.deviceID;
 
     super.initState();
   }
@@ -138,7 +141,10 @@ class _SignupPageState extends State<Setting> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                   child: Container(
                     width: 100,
-                    child: ElevatedButton(
+                    child: IconButton(
+                      icon: Icon(Icons.change_circle),
+                      color: Colors.red,
+                      tooltip: '변경',
                       onPressed: () {
                         if (UpdateData.passwordChange(
                             LoginScreen.allID, passwordController.text)) {
@@ -147,7 +153,6 @@ class _SignupPageState extends State<Setting> {
                           Fluttertoast.showToast(msg: '변경 실패');
                         }
                       },
-                      child: Text('변경'),
                     ),
                   ),
                 ),
@@ -188,7 +193,10 @@ class _SignupPageState extends State<Setting> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                   child: Container(
                     width: 100,
-                    child: ElevatedButton(
+                    child: IconButton(
+                      icon: Icon(Icons.change_circle),
+                      color: Colors.red,
+                      tooltip: '변경',
                       onPressed: () {
                         if (UpdateData.TelChange(
                             LoginScreen.allID, userTelController.text)) {
@@ -197,7 +205,6 @@ class _SignupPageState extends State<Setting> {
                           Fluttertoast.showToast(msg: '변경 실패');
                         }
                       },
-                      child: Text('변경'),
                     ),
                   ),
                 ),
@@ -238,7 +245,10 @@ class _SignupPageState extends State<Setting> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                   child: Container(
                     width: 100,
-                    child: ElevatedButton(
+                    child: IconButton(
+                      icon: Icon(Icons.change_circle),
+                      color: Colors.red,
+                      tooltip: '변경',
                       onPressed: () {
                         if (UpdateData.companyChange(LoginScreen.allID,
                             userCompanyNameController.text)) {
@@ -247,7 +257,6 @@ class _SignupPageState extends State<Setting> {
                           Fluttertoast.showToast(msg: '변경 실패');
                         }
                       },
-                      child: Text('변경'),
                     ),
                   ),
                 ),
@@ -289,18 +298,18 @@ class _SignupPageState extends State<Setting> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                   child: Container(
                     width: 100,
-                    child: ElevatedButton(
+                    child: IconButton(
+                      icon: Icon(Icons.change_circle),
+                      color: Colors.red,
+                      tooltip: '변경',
                       onPressed: () {
-                        if (LoginScreen.allGrade != 'S') {
-                          if (UpdateData.comNoChange(LoginScreen.allID,
-                              userCompanyNoController.text)) {
-                            Fluttertoast.showToast(msg: '변경 성공');
-                          } else {
-                            Fluttertoast.showToast(msg: '변경 실패');
-                          }
-                        } else {}
+                        if (UpdateData.comNoChange(
+                            LoginScreen.allID, userCompanyNoController.text)) {
+                          Fluttertoast.showToast(msg: '변경 성공');
+                        } else {
+                          Fluttertoast.showToast(msg: '변경 실패');
+                        }
                       },
-                      child: Text('변경'),
                     ),
                   ),
                 ),
@@ -342,18 +351,21 @@ class _SignupPageState extends State<Setting> {
                   padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
                   child: Container(
                     width: 100,
-                    child: ElevatedButton(
+                    child: IconButton(
+                      icon: Icon(Icons.change_circle),
+                      color: Colors.red,
+                      tooltip: '변경',
                       onPressed: () {
                         if (LoginScreen.allGrade == 'D') {
                           if (UpdateData.carNoChange(
                               LoginScreen.allID, userCarNoController.text)) {
-                            Timer.periodic(Duration(minutes: 3), (timer) {
+                            Timer.periodic(Duration(seconds: 1), (timer) {
                               setState(() {
                                 Fluttertoast.showToast(msg: '변경 성공');
                               });
                             });
                           } else {
-                            Timer.periodic(Duration(minutes: 3), (timer) {
+                            Timer.periodic(Duration(seconds: 1), (timer) {
                               setState(() {
                                 Fluttertoast.showToast(msg: '변경 실패');
                               });
@@ -361,12 +373,63 @@ class _SignupPageState extends State<Setting> {
                           }
                         }
                       },
-                      child: Text('변경'),
                     ),
                   ),
                 ),
               ],
             ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.start,
+            //   children: [
+            //     Padding(
+            //       padding: EdgeInsetsDirectional.fromSTEB(12, 12, 12, 12),
+            //       child: Container(
+            //         width: 200,
+            //         decoration: BoxDecoration(
+            //           color: Colors.white,
+            //           border: Border.all(
+            //             color: Colors.green,
+            //           ),
+            //         ),
+            //         child: Align(
+            //           alignment: AlignmentDirectional(-1, 0),
+            //           child: Padding(
+            //             padding: EdgeInsetsDirectional.fromSTEB(5, 5, 0, 2),
+            //             child: TextFormField(
+            //               controller: userDeviceIDController,
+            //               style: TextStyle(
+            //                   fontSize: 14,
+            //                   fontWeight: FontWeight.bold,
+            //                   color: Colors.green),
+            //               decoration: const InputDecoration(
+            //                 labelText: '장치ID',
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+            //       child: Container(
+            //         width: 100,
+            //         child: IconButton(
+            //           icon: Icon(Icons.change_circle),
+            //           color: Colors.red,
+            //           tooltip: '변경',
+            //           onPressed: () {
+            //             if (UpdateData.deviceIDChange(
+            //                 LoginScreen.allID, userDeviceIDController.text)) {
+            //               Fluttertoast.showToast(msg: '변경 성공');
+            //             } else {
+            //               Fluttertoast.showToast(msg: '변경 실패');
+            //             }
+            //           },
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

@@ -2,14 +2,108 @@ import 'package:bangtong/login/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 //import 'login/login.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  // 백그라운드에서 메세지 처리
+  flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification!.title,
+      message.notification!.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id, channel.name,
+          // channel.description,
+          // TODO add a proper drawable resource to android, for now using
+          //      one that already exists in example app.
+          icon: message.notification!.android!.smallIcon,
+        ),
+      ));
+
+  print('Handling a background message ${message.messageId}');
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+/// 상단 알림을 위해 AndroidNotificationChannel 생성
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  // 'This channel is used for important notifications', //description
+  importance: Importance.high,
+);
+
+//FlutterLocalNotificationsPlugin 패키지 초기화
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // 위에 정의한 백그라운드 메세지 처리 핸들러 연결
+  FirebaseMessaging.onBackgroundMessage(
+      _firebaseMessagingBackgroundHandler); // 백그라운드에서 동작하게 해줌
+  /// Create an Android Notification Channel.
+  ///
+  /// We use this channel in the `AndroidManifest.xml` file to override the
+  /// default FCM channel to enable heads up notifications.
+
+  // Android 알림 채널을 만듬
+  // 상단 헤드업 알림을 활성화하는 기본 FCM 채널
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Android용 초기화 설정
+    // 무조건 해야함 약속과 같음
+    var initialzationsettingsAndroid =
+        AndroidInitializationSettings('@mipmap/bts');
+    var initializationSettings =
+        InitializationSettings(android: initialzationsettingsAndroid);
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    // 포그라운드에서의 메세지처리
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(channel.id, channel.name,
+                  //channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: android.smallIcon //'launch_background',
+                  ),
+            ));
+      }
+    });
+    //토큰 받아옴
+    getToken();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +118,13 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
     );
   }
-}
 
-// class Splash extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Icon(
-//           Icons.apartment_outlined,
-//           size: MediaQuery.of(context).size.width * 0.785,
-//         ),
-//       ),
-//     );
-//   }
-// }
+  // Token을 가져오는 함수 작성
+  getToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    print(token);
+  }
+}
 
 class HomePage extends StatelessWidget {
   HomePage() {
@@ -54,3 +140,50 @@ class HomePage extends StatelessWidget {
     return LoginScreen();
   }
 }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       // 디버그 표시를 없앤다.
+//       debugShowCheckedModeBanner: false,
+//       title: 'Flutter Splash', // theme: ThemeData(
+//       //   primarySwatch: Colors.blue,
+//       //   visualDensity: VisualDensity.adaptivePlatformDensity,
+//       // ),
+
+//       home: HomePage(),
+//     );
+//   }
+// }
+
+// // class Splash extends StatelessWidget {
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       body: Center(
+// //         child: Icon(
+// //           Icons.apartment_outlined,
+// //           size: MediaQuery.of(context).size.width * 0.785,
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// class HomePage extends StatelessWidget {
+//   HomePage() {
+//     SystemChrome.setEnabledSystemUIMode(
+//       SystemUiMode.manual,
+//       overlays: SystemUiOverlay.values,
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     //return LoginPage();
+//     return LoginScreen();
+//   }
+// }

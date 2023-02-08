@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bangtong/function/UpdateData.dart';
 import 'package:bangtong/pages/driver_first.dart';
 import 'package:bangtong/pages/history_D.dart';
+import 'package:bangtong/pages/main_screen_driver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; //flutter의 package를 가져오는 코드 반드시 필요
 import 'package:direct_sms/direct_sms.dart';
@@ -131,6 +132,9 @@ class _MyAppState extends State<DetailPageDriver>
               height: 20,
             ),
             Divider(),
+            SizedBox(
+              height: 20,
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0.0, 0, 0),
               child: Row(
@@ -191,12 +195,10 @@ class _MyAppState extends State<DetailPageDriver>
                           isPlaying = false;
                           isSending = false;
                           _isButtonDisabled = false;
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => third_D()));
-                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => third_D()),
+                          ).then((value) => setState(() {})); //배차 내역으로 화면 이동
                         } else {
                           Fluttertoast.showToast(
                               msg: '배차가 취소되었습니다. \n 다른 오더를 이용해주시기 바랍니다.');
@@ -204,13 +206,11 @@ class _MyAppState extends State<DetailPageDriver>
                           isSending = false;
                           _isButtonDisabled = false;
 
-                          Future.delayed(const Duration(milliseconds: 500),
-                              () async {
-                            final reuslt = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: ((context) => Driver_first())));
-                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainScreenDriver()),
+                          ).then((value) => setState(() {})); //배차 내역으로 화면 이동
                         }
                       } else {
                         Fluttertoast.showToast(msg: '화주에게 문자 보낸 후 가능합니다.');
@@ -271,13 +271,11 @@ class _MyAppState extends State<DetailPageDriver>
                         // // 캔슬 횟수 추가(캔슬 횟수 하루에 3번 제한)
                         offDialog(LoginScreen.cancelCount + 1);
 
-                        Future.delayed(const Duration(milliseconds: 500),
-                            () async {
-                          final reuslt = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: ((context) => Driver_first())));
-                        });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainScreenDriver()),
+                        ).then((value) => setState(() {})); //배차 내역으로 화면 이동
                       } else {
                         Fluttertoast.showToast(msg: '화주에게 문자 보낸 후 가능합니다.');
                       }
@@ -442,7 +440,11 @@ class _MyAppState extends State<DetailPageDriver>
                   UpdateData.calcelCountChange(LoginScreen.allID, cancelcount);
 
                   Future.delayed(const Duration(milliseconds: 500), () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MainScreenDriver()),
+                    ).then((value) => setState(() {})); //배차 내역으로 화면 이동
                   });
                 },
               ),

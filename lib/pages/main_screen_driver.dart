@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bangtong/login/loginScreen.dart';
 import 'package:bangtong/pages/driver_first.dart';
+import 'package:bangtong/pages/driver_first_listVersion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,7 +55,7 @@ class _MainScreen extends State<MainScreenDriver> {
 
   final List<Widget> _widgetOptions = <Widget>[
     // MainScreen(),
-    Driver_first(), // 배차 등록 현황
+    Driver_first_list(), // 배차 등록 현황
     board(), // 게시판
     third_D(), // 배차 내역
     four(), // 상담문의
